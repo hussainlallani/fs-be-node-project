@@ -10,6 +10,6 @@ jobs:
         with:
           host: 157.173.198.244
           username: root
-          key: AAAAC3NzaC1lZDI1NTE5AAAAICFsTajwOKVZlRoWYLUE3MYnk5T01M2KgDRm34+5DZRR
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
           source: "./"
           target: "/var/www/fs-be-node-project"
