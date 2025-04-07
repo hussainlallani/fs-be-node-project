@@ -13,3 +13,7 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           source: "./"
           target: "/var/www/fs-be-node-project"
+          port: 20
+          strip_components: 1             # Remove parent folder in archive
+          overwrite: true                 # Force overwrite
+          debug: true                     # Show detailed logs
