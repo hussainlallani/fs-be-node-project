@@ -1,0 +1,15 @@
+name: Deploy to Contabo
+on: push
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Copy files via SSH
+        uses: appleboy/scp-action@master
+        with:
+          host: 157.173.198.244
+          username: root
+          key: AAAAC3NzaC1lZDI1NTE5AAAAICFsTajwOKVZlRoWYLUE3MYnk5T01M2KgDRm34+5DZRR
+          source: "./"
+          target: "/var/www/fs-be-node-project"
