@@ -93,3 +93,5 @@ bash
 Copy
 sudo certbot --nginx -d yourdomain.com -d www.yourdomain.com
 (Follow prompts to enable HTTPS.)
+
+
