@@ -4,13 +4,13 @@ const server = http.createServer((req, res) => {
   if (req.url === "/") {
     res.write("Hello World!");
     res.end();
-  }
-  if (req.url === "/api/courses") {
+  } else if (req.url === "/api/courses") {
     res.write(JSON.stringify([1, 2, 3]));
     res.end();
+  } else {
+    res.write("Page not found!");
+    res.end();
   }
-  res.write("Page not found!");
-  res.end();
 });
 
 server.listen(3000);
