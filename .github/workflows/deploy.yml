@@ -41,7 +41,7 @@ jobs:
 
             # Install dependencies only if package.json exists
             if [ -f "package.json" ]; then
-              npm install
+              npm install --production
               
               # Stop existing PM2 process if running
               pm2 delete fs-be-node-app 2> /dev/null || true
