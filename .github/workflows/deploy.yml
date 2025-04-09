@@ -48,7 +48,7 @@ jobs:
               
               # Start with PM2
               npm install -g pm2
-              pm2 start app.js --name "fs-be-node-app"
+              pm2 start server.js --name "fs-be-node-app"
               pm2 save
               pm2 startup
             else
