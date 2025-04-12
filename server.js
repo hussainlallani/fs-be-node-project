@@ -13,6 +13,10 @@ app.get("/", (req, res) => {
   res.send("Hello World!");
 });
 
+app.get("/api/courses", (req, res) => {
+  res.send([1, 2, 3]);
+});
+
 // const logger = new Logger();
 // // Step1: Register a listener
 // logger.on("messageLogged", (arg) => {
