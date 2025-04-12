@@ -17,6 +17,10 @@ app.get("/api/courses/:id", (req, res) => {
   res.send("Your id:" + req.params.id);
 });
 
+app.get("/api/courses/:year/:month", (req, res) => {
+  res.send("Your id: " + req.params.year + " your month: " + req.params.month);
+});
+
 app.get("/api/courses", (req, res) => {
   res.send([1, 2, 3]);
 });
