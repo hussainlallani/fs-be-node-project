@@ -13,12 +13,8 @@ app.get("/", (req, res) => {
   res.send("API Builder YML!");
 });
 
-app.get("/courses", (req, res) => {
-  res.send("Courses!");
-});
-
-app.get("/teachers", (req, res) => {
-  res.send("teachers!");
+app.get("/api/courses/:id", (req, res) => {
+  res.send("Your id:", id);
 });
 
 app.get("/api/courses", (req, res) => {
