@@ -1,57 +1,87 @@
 name: Deploy Node.js App to Contabo
-on: push
+
+on:
+  push:
+    branches:
+      - main # Change this if your default branch is different
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
 
-      - name: Copy files via SCP
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+
+      - name: Copy Files via SCP
         uses: appleboy/scp-action@master
         with:
           host: ${{ secrets.SSH_HOST }}
           username: root
           key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: 22
           source: "."
           target: "/var/www/fs-be-node-project"
-          port: 22
           overwrite: true
-          # Removed strip_components as it was removing package.json
           debug: true
 
-      - name: Setup Node.js and run app
+      - name: Setup & Run Node.js App
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.SSH_HOST }}
           username: root
           key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: 22
           script: |
-            # Navigate to project directory
-            cd /var/www/fs-be-node-project
+            echo "🔧 Starting deploy on $(hostname)"
 
-            # Verify files were copied
+            cd /var/www/fs-be-node-project || {
+              echo "❌ Failed to find project directory!"
+              exit 1
+            }
+
+            echo "📁 Project directory:"
             ls -la
 
-            # Install Node.js (if needed)
+            # Install Node.js if not present
             if ! command -v node &> /dev/null; then
+              echo "📥 Installing Node.js..."
               curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
               sudo apt-get install -y nodejs
+            else
+              echo "✅ Node.js version: $(node -v)"
             fi
 
-            # Install dependencies only if package.json exists
-            if [ -f "package.json" ]; then
-              npm install --production
-              
-              # Stop existing PM2 process if running
-              pm2 delete fs-be-node-app 2> /dev/null || true
-              
-              # Start with PM2
+            # Install PM2 globally if not available
+            if ! command -v pm2 &> /dev/null; then
+              echo "📥 Installing PM2..."
               npm install -g pm2
-              pm2 start server.js --name "fs-be-node-app"
-              pm2 save
-              pm2 startup
             else
-              echo "ERROR: package.json not found!"
+              echo "✅ PM2 version: $(pm2 -v)"
+            fi
+
+            # Install project dependencies
+            if [ -f "package.json" ]; then
+              echo "📦 Installing dependencies..."
+              npm install --production
+            else
+              echo "❌ package.json not found!"
               exit 1
             fi
+
+            # Stop existing process (safe fallback)
+            echo "🛑 Stopping existing PM2 app if running..."
+            pm2 delete fs-be-node-app 2>/dev/null || true
+
+            # Start app using PM2
+            echo "🚀 Starting Node app with PM2..."
+            pm2 start server.js --name "fs-be-node-app" || {
+              echo "❌ Failed to start app"
+              exit 1
+            }
+
+            echo "💾 Saving PM2 process list"
+            pm2 save
+
+            echo "🔁 Configuring PM2 to run on startup..."
+            pm2 startup systemd --silent

@@ -10,7 +10,7 @@ app.use(express.json());
 
 // Basic route
 app.get("/", (req, res) => {
-  res.send("API Builder!");
+  res.send("API Builder YML!");
 });
 
 app.get("/courses", (req, res) => {
