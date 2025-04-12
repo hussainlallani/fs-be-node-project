@@ -14,7 +14,7 @@ app.get("/", (req, res) => {
 });
 
 app.get("/api/courses/:id", (req, res) => {
-  res.send("Your id:", id);
+  res.send("Your id:", req.params.id);
 });
 
 app.get("/api/courses", (req, res) => {
