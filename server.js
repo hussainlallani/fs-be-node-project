@@ -8,13 +8,26 @@ const PORT = process.env.PORT || 3000;
 // Middleware to parse JSON requests
 app.use(express.json());
 
+const courses = [
+  { id: 1, name: "Course1" },
+  { id: 2, name: "Course2" },
+  { id: 3, name: "Course3" },
+];
+
 // Basic route
 app.get("/", (req, res) => {
   res.send("API Builder YML!");
 });
 
+app.get("/api/courses", (req, res) => {
+  res.send(courses);
+});
+
 app.get("/api/courses/:id", (req, res) => {
-  res.send("Your id:" + req.params.id);
+  const course = courses.find(
+    (course) => course.id === parseInt(req.params.id)
+  );
+  res.send(course);
 });
 
 app.get("/api/courses/:year/:month", (req, res) => {
@@ -26,10 +39,6 @@ app.get("/api/courses/:year/:month", (req, res) => {
       " sort by: " +
       JSON.stringify(req.query) // Convert query object to a string
   );
-});
-
-app.get("/api/courses", (req, res) => {
-  res.send([1, 2, 3]);
 });
 
 // const logger = new Logger();
