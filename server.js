@@ -18,7 +18,14 @@ app.get("/api/courses/:id", (req, res) => {
 });
 
 app.get("/api/courses/:year/:month", (req, res) => {
-  res.send("Your id: " + req.params.year + " your month: " + req.params.month);
+  res.send(
+    "Your id: " +
+      req.params.year +
+      " your month: " +
+      req.params.month +
+      " sort by: " +
+      JSON.stringify(req.query) // Convert query object to a string
+  );
 });
 
 app.get("/api/courses", (req, res) => {
