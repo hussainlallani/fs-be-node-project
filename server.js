@@ -1,6 +1,7 @@
 import express from "express";
 import Logger from "./logger.js";
 import { MongoClient } from "mongodb";
+import compression
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -15,6 +16,10 @@ app.get("/", (req, res) => {
 
 app.get("/courses", (req, res) => {
   res.send("Courses!");
+});
+
+app.get("/teachers", (req, res) => {
+  res.send("teachers!");
 });
 
 app.get("/api/courses", (req, res) => {
