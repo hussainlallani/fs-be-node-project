@@ -13,6 +13,10 @@ app.get("/", (req, res) => {
   res.send("Hello World!");
 });
 
+app.get("/course", (req, res) => {
+  res.send("Courses!");
+});
+
 app.get("/api/courses", (req, res) => {
   res.send([1, 2, 3]);
 });
