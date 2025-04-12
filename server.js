@@ -1,6 +1,7 @@
 import express from "express";
 import Logger from "./logger.js";
 import { MongoClient } from "mongodb";
+import { z } from "zod";
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -16,18 +17,169 @@ const courses = [
 
 // Basic route
 app.get("/", (req, res) => {
-  res.send("API Builder YML!");
+  res.status(200).json({
+    message: "Welcome to the API Builder!",
+    status: "success",
+    api_version: "1.0.0", // Example version, adjust as needed
+    description:
+      "This is the main entry point of the API. For more details, check the documentation.",
+  });
 });
 
 app.get("/api/courses", (req, res) => {
-  res.send(courses);
+  // If there are no courses, return an empty array with a message
+  if (courses.length === 0) {
+    return res.status(200).json({
+      message: "No courses found.",
+      data: [],
+    });
+  }
+
+  // Optional: Handle pagination or other query parameters
+  const { limit = 10, page = 1 } = req.query; // Default to limit=10, page=1
+
+  const paginatedCourses = courses.slice((page - 1) * limit, page * limit);
+
+  // Return the paginated courses with metadata (like total count)
+  res.status(200).json({
+    message: "Courses retrieved successfully.",
+    data: paginatedCourses,
+    pagination: {
+      total: courses.length,
+      limit: parseInt(limit),
+      page: parseInt(page),
+      totalPages: Math.ceil(courses.length / limit),
+    },
+  });
 });
 
 app.get("/api/courses/:id", (req, res) => {
-  const course = courses.find(
-    (course) => course.id === parseInt(req.params.id)
+  // Parse course ID from request params and find the course
+  const courseId = parseInt(req.params.id);
+
+  if (isNaN(courseId)) {
+    return res.status(400).json({
+      error: "Invalid ID format.",
+      message: "Course ID must be a valid number.",
+    });
+  }
+
+  // Find the course with the given ID
+  const course = courses.find((course) => course.id === courseId);
+
+  if (!course) {
+    return res.status(404).json({
+      error: "Resource not found.",
+      message: `Course with ID ${courseId} not found.`,
+    });
+  }
+
+  // If course is found, return it
+  return res.status(200).json(course);
+});
+
+app.post("/api/courses", (req, res) => {
+  // Zod schema for validating course data
+  const courseSchema = z.object({
+    name: z
+      .string({
+        required_error: "Course name is required.",
+        invalid_type_error: "Course name must be a string.",
+      })
+      .min(1, "Course name cannot be empty."),
+  });
+
+  // Safe parse the request body to validate
+  const parseResult = courseSchema.safeParse(req.body);
+
+  if (!parseResult.success) {
+    // Format error messages
+    const errors = parseResult.error.errors.map((err) => ({
+      field: err.path[0],
+      message: err.message,
+    }));
+
+    return res.status(400).json({
+      error: "Validation failed.",
+      details: errors,
+    });
+  }
+
+  // Create the new course
+  const newCourse = {
+    id: courses.length + 1,
+    name: parseResult.data.name,
+  };
+
+  // Add the course to the courses array
+  courses.push(newCourse);
+
+  return res.status(201).json({
+    message: "Course created successfully.",
+    course: newCourse,
+  });
+});
+
+app.put("/api/courses/:id", (req, res) => {
+  const courseId = parseInt(req.params.id, 10);
+
+  // Find the index of the course to update
+  const existingCourseIndex = courses.findIndex(
+    (course) => course.id === courseId
   );
-  res.send(course);
+
+  if (existingCourseIndex === -1) {
+    return res.status(404).json({ error: "Course not found." });
+  }
+
+  // Zod schema for validation
+  const courseUpdateSchema = z.object({
+    name: z
+      .string({
+        required_error: "Course name is required.",
+        invalid_type_error: "Course name must be a string.",
+      })
+      .min(1, "Course name cannot be empty."),
+  });
+
+  const validationResult = courseUpdateSchema.safeParse(req.body);
+
+  if (!validationResult.success) {
+    const errors = validationResult.error.errors.map((err) => ({
+      field: err.path[0],
+      message: err.message,
+    }));
+    return res.status(400).json({ errors });
+  }
+
+  // Update course with new name
+  courses[existingCourseIndex].name = validationResult.data.name;
+
+  return res.status(200).json({
+    message: "Course updated successfully.",
+    course: courses[existingCourseIndex],
+  });
+});
+
+app.delete("/api/courses/:id", (req, res) => {
+  const courseId = parseInt(req.params.id, 10);
+
+  // Find the index of the course to delete
+  const existingCourseIndex = courses.findIndex(
+    (course) => course.id === courseId
+  );
+
+  if (existingCourseIndex === -1) {
+    return res.status(404).json({ error: "Course not found." });
+  }
+
+  // Remove course from the array
+  const deletedCourse = courses.splice(existingCourseIndex, 1);
+
+  return res.status(200).json({
+    message: "Course deleted successfully.",
+    course: deletedCourse[0],
+  });
 });
 
 app.get("/api/courses/:year/:month", (req, res) => {
