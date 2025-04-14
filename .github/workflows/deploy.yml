@@ -63,6 +63,7 @@ jobs:
             # Install project dependencies
             if [ -f "package.json" ]; then
               echo "📦 Installing dependencies..."
+              export NODE_ENV=production
               npm install --production
             else
               echo "❌ package.json not found!"

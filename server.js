@@ -2,12 +2,48 @@ import express from "express";
 import Logger from "./logger.js";
 import { MongoClient } from "mongodb";
 import { z } from "zod";
+import helmet from "helmet";
+import morgan from "morgan";
+import config from "config";
+import debug from "debug";
+
+const startupDebugger = debug("app:startup");
+const dbDebugger = debug("app:db");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+if (app.get("env") === "development") {
+  app.use(morgan("tiny"));
+  startupDebugger("Morgan enabled...");
+}
+
+dbDebugger("Connected to the database...");
+
+app.set("view engine", "pug");
+app.set("views", "./views"); //default
+
+console.log(`NODE_ENV: ${process.env.NODE_ENV}`); //undefined
+console.log(`APP: ${app.get("env")}`); // development
+console.log(config.get("name"));
+console.log(config.get("mail.host"));
+
+app.use(helmet());
+
 // Middleware to parse JSON requests
 app.use(express.json());
+
+app.use(
+  express.urlencoded({
+    extended: true,
+    inflate: true,
+    limit: "1mb",
+    parameterLimit: 5000,
+    type: "application/x-www-form-urlencoded",
+  })
+);
+
+app.use(express.static("public"));
 
 const courses = [
   { id: 1, name: "Course1" },
@@ -17,13 +53,14 @@ const courses = [
 
 // Basic route
 app.get("/", (req, res) => {
-  res.status(200).json({
-    message: "Welcome to the API Builder!",
-    status: "success",
-    api_version: "1.0.0", // Example version, adjust as needed
-    description:
-      "This is the main entry point of the API. For more details, check the documentation.",
-  });
+  // res.status(200).json({
+  //   message: "Welcome to the API Builder!",
+  //   status: "success",
+  //   api_version: "1.0.0", // Example version, adjust as needed
+  //   description:
+  //     "This is the main entry point of the API. For more details, check the documentation.",
+  // });
+  res.render("index", { title: "My Express App", message: "Hello!" });
 });
 
 app.get("/api/courses", (req, res) => {
