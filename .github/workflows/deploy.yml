@@ -3,7 +3,7 @@ name: Deploy Node.js App to Contabo
 on:
   push:
     branches:
-      - main
+      - main # Change if your default branch is different
 
 jobs:
   deploy:
@@ -13,18 +13,6 @@ jobs:
       - name: Checkout Repo
         uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: "20"
-          cache: "npm"
-
-      - name: Install Dependencies
-        run: npm ci
-
-      - name: Build TypeScript
-        run: npm run build
-
       - name: Copy Files via SCP
         uses: appleboy/scp-action@master
         with:
@@ -32,7 +20,7 @@ jobs:
           username: root
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: 22
-          source: "dist/,package.json,package-lock.json,.env"
+          source: "."
           target: "/var/www/fs-be-node-project"
           overwrite: true
           debug: true
@@ -58,8 +46,8 @@ jobs:
             # Install Node.js if not present
             if ! command -v node &> /dev/null; then
               echo "📥 Installing Node.js..."
-              curl -fsSL https://deb.nodesource.com/setup_20.x | bash -
-              apt-get install -y nodejs
+              curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
+              sudo apt-get install -y nodejs
             else
               echo "✅ Node.js version: $(node -v)"
             fi
@@ -76,10 +64,18 @@ jobs:
             if [ -f "package.json" ]; then
               echo "📦 Installing dependencies..."
               export NODE_ENV=production
-              npm ci --production
+              npm install --production
             else
               echo "❌ package.json not found!"
               exit 1
+            fi
+
+            # Run build
+            if npm run | grep -q "build"; then
+              echo "🏗️ Running build..."
+              npm run build
+            else
+              echo "⚠️ No build script found, skipping..."
             fi
 
             # Stop existing process (safe fallback)
@@ -88,7 +84,7 @@ jobs:
 
             # Start app using PM2
             echo "🚀 Starting Node app with PM2..."
-            pm2 start dist/index.js --name "fs-be-node-app" -i 1 -- --env-file=.env || {
+            pm2 start server.js --name "fs-be-node-app" || {
               echo "❌ Failed to start app"
               exit 1
             }
@@ -97,4 +93,4 @@ jobs:
             pm2 save
 
             echo "🔁 Configuring PM2 to run on startup..."
-            pm2 startup systemd -u root --hp /root
+            pm2 startup systemd --silent
