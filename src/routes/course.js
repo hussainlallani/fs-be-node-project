@@ -189,6 +189,9 @@ import {
   updateCourse,
   deleteCourse,
 } from "../controllers/course.js";
+import debug from "debug";
+
+const routeDebugger = debug("app:route");
 
 // const router = express.Router();
 export const router = express.Router();
@@ -206,6 +209,42 @@ const validateCourse = [
     .custom((tags) => tags.every((tag) => typeof tag === "string"))
     .withMessage("Tags must be strings"),
   body("credits")
+    .isInt({ min: 1, max: 5 })
+    .withMessage("Credits must be an integer between 1 and 5"),
+  body("description")
+    .optional()
+    .isString()
+    .withMessage("Description must be a string"),
+  body("isPublished")
+    .optional()
+    .isBoolean()
+    .withMessage("isPublished must be a boolean"),
+  body("date")
+    .optional()
+    .isISO8601()
+    .toDate()
+    .withMessage("Date must be a valid ISO 8601 date"),
+];
+
+const validatePartialCourse = [
+  body("title")
+    .optional()
+    .isString()
+    .notEmpty()
+    .withMessage("Title must be a non-empty string"),
+  body("instructor")
+    .optional()
+    .isString()
+    .notEmpty()
+    .withMessage("Instructor must be a non-empty string"),
+  body("tags")
+    .optional()
+    .isArray({ min: 1 })
+    .withMessage("Tags must be a non-empty array")
+    .custom((tags) => tags.every((tag) => typeof tag === "string"))
+    .withMessage("Tags must be strings"),
+  body("credits")
+    .optional()
     .isInt({ min: 1, max: 5 })
     .withMessage("Credits must be an integer between 1 and 5"),
   body("description")
@@ -253,7 +292,6 @@ router.get("/", validatePagination, async (req, res, next) => {
       throw err;
     }
     const { limit = 10, page = 1 } = req.query;
-    console.log("req.db: ", req.db);
     const courses = await getCourses(req.db, { limit, page });
     res.status(200).json(courses);
   } catch (err) {
@@ -279,11 +317,13 @@ router.get("/:id", validateId, async (req, res, next) => {
 
 router.post("/", validateCourse, async (req, res, next) => {
   try {
+    routeDebugger("POST /api/course received:", req.body);
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       const err = new Error("Validation failed");
       err.status = 400;
       err.details = errors.array();
+      routeDebugger("Validation errors:", errors.array());
       throw err;
     }
     const course = await createCourse(req.db, req.body);
@@ -293,21 +333,28 @@ router.post("/", validateCourse, async (req, res, next) => {
   }
 });
 
-router.put("/:id", validateId, validateCourse, async (req, res, next) => {
-  try {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      const err = new Error("Validation failed");
-      err.status = 400;
-      err.details = errors.array();
-      throw err;
+router.put(
+  "/:id",
+  validateId,
+  validatePartialCourse,
+  async (req, res, next) => {
+    try {
+      routeDebugger("PUT /api/course/:id received:", req.body);
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        const err = new Error("Validation failed");
+        err.status = 400;
+        err.details = errors.array();
+        routeDebugger("Validation errors:", errors.array());
+        throw err;
+      }
+      const course = await updateCourse(req.db, req.params.id, req.body);
+      res.status(200).json(course);
+    } catch (err) {
+      next(err);
     }
-    const course = await updateCourse(req.db, req.params.id, req.body);
-    res.status(200).json(course);
-  } catch (err) {
-    next(err);
   }
-});
+);
 
 router.delete("/:id", validateId, async (req, res, next) => {
   try {
