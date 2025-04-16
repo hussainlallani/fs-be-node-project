@@ -35,32 +35,62 @@ jobs:
           script: |
             echo "🔧 Starting deploy on $(hostname)"
 
-            cd /var/www/fs-be-node-project || exit 1
+            # Navigate to project directory
+            cd /var/www/fs-be-node-project || {
+              echo "❌ Failed to find project directory!"
+              exit 1
+            }
 
-            # Clean and install
+            echo "📁 Project directory contents:"
+            ls -la
+
+            # Install Node.js (if needed)
+            if ! command -v node &> /dev/null; then
+              echo "📥 Installing Node.js..."
+              curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
+              sudo apt-get install -y nodejs
+            else
+              echo "✅ Node.js $(node -v) already installed"
+            fi
+
+            # Install PM2 globally (if needed)
+            if ! command -v pm2 &> /dev/null; then
+              echo "📥 Installing PM2..."
+              npm install -g pm2
+            else
+              echo "✅ PM2 $(pm2 -v) already installed"
+            fi
+
+            # Clean previous builds
             echo "🧹 Cleaning previous build..."
             npm run clean
 
+            # Install dependencies
             echo "📦 Installing dependencies..."
-            npm ci --omit=dev
+            npm ci --production
 
+            # Run build
             echo "🏗️ Building application..."
             npm run build
 
-            # Verify build output
-            if [ ! -f "dist/index.js" ]; then
-              echo "❌ Build failed - dist/index.js not found"
-              exit 1
-            fi
-
-            # PM2 management
+            # Stop existing PM2 process if running
             echo "🛑 Stopping existing PM2 process..."
             pm2 delete fs-be-node-app 2>/dev/null || true
 
+            # Start application with PM2
             echo "🚀 Starting application..."
-            pm2 start dist/index.js --name "fs-be-node-app" || exit 1
+            pm2 start dist/index.js --name "fs-be-node-app" || {
+              echo "❌ Failed to start application"
+              exit 1
+            }
 
+            # Save PM2 process list
             echo "💾 Saving PM2 process list..."
+            pm2 save
+
+            # Configure PM2 startup
+            echo "🔁 Setting up PM2 startup..."
+            pm2 startup systemd -u root --hp /root
             pm2 save
 
             echo "🎉 Deployment completed successfully!"
