@@ -2,7 +2,7 @@ import dotenv from "dotenv";
 import express, { Request, Response, NextFunction } from "express";
 import helmet from "helmet";
 import morgan from "morgan";
-import { MongoClient, Db } from "mongodb";
+import { Db } from "mongodb";
 import { router as courseRouter } from "./routes/course";
 import debug from "debug";
 import { ErrorWithStatus } from "./controllers/course";
