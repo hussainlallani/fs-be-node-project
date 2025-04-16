@@ -10,7 +10,7 @@
     "dev": "nodemon src/index.ts",
     "dev:debug": "DEBUG=app:* nodemon src/index.ts",
     "dev:ts": "ts-node-esm src/index.ts",
-    "lint": "jshint src"
+    "lint": "jshint --config .jshintrc src"
   },
   "dependencies": {
     "debug": "^4.4.0",

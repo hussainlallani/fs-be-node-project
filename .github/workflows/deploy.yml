@@ -25,72 +25,42 @@ jobs:
           overwrite: true
           strip_components: 1 # Prevents creating an extra directory level
 
-      - name: Setup & Run Node.js App
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ secrets.SSH_HOST }}
-          username: root
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          port: 22
-          script: |
-            echo "🔧 Starting deploy on $(hostname)"
+    - name: Setup & Run Node.js App
+  uses: appleboy/ssh-action@master
+  with:
+    host: ${{ secrets.SSH_HOST }}
+    username: root
+    key: ${{ secrets.SSH_PRIVATE_KEY }}
+    port: 22
+    script: |
+      echo "🔧 Starting deploy on $(hostname)"
+      
+      cd /var/www/fs-be-node-project || exit 1
 
-            # Navigate to project directory
-            cd /var/www/fs-be-node-project || {
-              echo "❌ Failed to find project directory!"
-              exit 1
-            }
+      # Clean and install
+      echo "🧹 Cleaning previous build..."
+      npm run clean
 
-            echo "📁 Project directory contents:"
-            ls -la
+      echo "📦 Installing dependencies..."
+      npm ci --omit=dev
 
-            # Install Node.js (if needed)
-            if ! command -v node &> /dev/null; then
-              echo "📥 Installing Node.js..."
-              curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
-              sudo apt-get install -y nodejs
-            else
-              echo "✅ Node.js $(node -v) already installed"
-            fi
+      echo "🏗️ Building application..."
+      npm run build
 
-            # Install PM2 globally (if needed)
-            if ! command -v pm2 &> /dev/null; then
-              echo "📥 Installing PM2..."
-              npm install -g pm2
-            else
-              echo "✅ PM2 $(pm2 -v) already installed"
-            fi
+      # Verify build output
+      if [ ! -f "dist/index.js" ]; then
+        echo "❌ Build failed - dist/index.js not found"
+        exit 1
+      fi
 
-            # Clean previous builds
-            echo "🧹 Cleaning previous build..."
-            npm run clean
+      # PM2 management
+      echo "🛑 Stopping existing PM2 process..."
+      pm2 delete fs-be-node-app 2>/dev/null || true
 
-            # Install dependencies
-            echo "📦 Installing dependencies..."
-            npm ci --production
+      echo "🚀 Starting application..."
+      pm2 start dist/index.js --name "fs-be-node-app" || exit 1
 
-            # Run build
-            echo "🏗️ Building application..."
-            npm run build
+      echo "💾 Saving PM2 process list..."
+      pm2 save
 
-            # Stop existing PM2 process if running
-            echo "🛑 Stopping existing PM2 process..."
-            pm2 delete fs-be-node-app 2>/dev/null || true
-
-            # Start application with PM2
-            echo "🚀 Starting application..."
-            pm2 start dist/index.js --name "fs-be-node-app" || {
-              echo "❌ Failed to start application"
-              exit 1
-            }
-
-            # Save PM2 process list
-            echo "💾 Saving PM2 process list..."
-            pm2 save
-
-            # Configure PM2 startup
-            echo "🔁 Setting up PM2 startup..."
-            pm2 startup systemd -u root --hp /root
-            pm2 save
-
-            echo "🎉 Deployment completed successfully!"
+      echo "🎉 Deployment completed successfully!"
