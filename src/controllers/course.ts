@@ -21,6 +21,23 @@ export interface PaginationOptions {
   page?: number;
 }
 
+export interface GetCoursesParams {
+  limit: number;
+  page: number;
+  sort?: string;
+  order?: "asc" | "desc";
+  title?: string;
+  instructor?: string;
+  tags?: string;
+  description?: string;
+  credits?: number;
+  minCredits?: number;
+  maxCredits?: number;
+  isPublished?: boolean;
+  startDate?: Date;
+  endDate?: Date;
+}
+
 export interface CourseResponse {
   message: string;
   data: Course[];
@@ -62,33 +79,61 @@ export async function createCourse(
   }
 }
 
-export async function getCourses(
-  db: Db,
-  { limit = 10, page = 1 }: PaginationOptions = {}
-): Promise<CourseResponse> {
-  if (!db) throw new Error("Database connection not provided");
-  const collection = db.collection<Course>("courses");
+export async function getCourses(db: Db, params: GetCoursesParams) {
+  const {
+    limit,
+    page,
+    sort,
+    order,
+    title,
+    instructor,
+    tags,
+    description,
+    credits,
+    minCredits,
+    maxCredits,
+    isPublished,
+    startDate,
+    endDate,
+  } = params;
+  const skip = (page - 1) * limit;
+
+  // Build query
+  const query: any = {};
+  if (title) query.title = { $regex: title, $options: "i" };
+  if (instructor) query.instructor = { $regex: instructor, $options: "i" };
+  if (tags) query.tags = { $in: [tags] };
+  if (description) query.description = { $regex: description, $options: "i" };
+  if (credits !== undefined) query.credits = credits;
+  if (minCredits !== undefined || maxCredits !== undefined) {
+    query.credits = {};
+    if (minCredits !== undefined) query.credits.$gte = minCredits;
+    if (maxCredits !== undefined) query.credits.$lte = maxCredits;
+  }
+  if (isPublished !== undefined) query.isPublished = isPublished;
+  if (startDate || endDate) {
+    query.date = {};
+    if (startDate) query.date.$gte = startDate;
+    if (endDate) query.date.$lte = endDate;
+  }
+
+  // Build sort options
+  const sortOptions: any = {};
+  if (sort && order) {
+    sortOptions[sort] = order === "asc" ? 1 : -1;
+  }
+
   try {
-    const total = await collection.countDocuments();
-    const courses = await collection
-      .find()
-      .skip((page - 1) * limit)
+    const courses = await db
+      .collection<Course>("courses")
+      .find(query)
+      .sort(sortOptions)
+      .skip(skip)
       .limit(limit)
       .toArray();
-    return {
-      message: courses.length
-        ? "Courses retrieved successfully"
-        : "No courses found",
-      data: courses,
-      pagination: {
-        total,
-        limit,
-        page,
-        totalPages: Math.ceil(total / limit),
-      },
-    };
-  } catch (err: any) {
-    const error: ErrorWithStatus = new Error("Failed to retrieve courses");
+    return courses;
+  } catch (err) {
+    const error: ErrorWithStatus = new Error("Failed to fetch courses");
     error.status = 500;
     throw error;
   }

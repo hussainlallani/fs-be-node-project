@@ -22,7 +22,8 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 const mongoUri =
-  process.env.MONGODB_URI || "mongodb://157.173.198.244:27017/express-app";
+  // process.env.MONGODB_URI || "mongodb://157.173.198.244:27017/express-app";
+  process.env.MONGODB_URI;
 
 // Configure MongoClient with connection pool
 // const client = new MongoClient(mongoUri, {
