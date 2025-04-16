@@ -35,8 +35,7 @@ export const validateParams =
   <Output, Input = Output>(schema: z.ZodType<Output, any, Input>) =>
   async (req: CustomRequest, res: Response, next: NextFunction) => {
     try {
-      const parsed = await schema.parseAsync(req.params);
-      req.params = parsed as any;
+      req.params = (await schema.parseAsync(req.params)) as any;
       next();
     } catch (err) {
       const error: ErrorWithStatus = new Error("Validation failed");
