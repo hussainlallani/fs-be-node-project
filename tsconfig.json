@@ -1,18 +1,19 @@
 {
   "compilerOptions": {
-    "target": "ES2020",
-    "module": "ESNext",
-    "moduleResolution": "node",
+    "target": "ES2022",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "outDir": "./dist",
+    "rootDir": "./src",
     "esModuleInterop": true,
-    "forceConsistentCasingInFileNames": true,
+    "allowSyntheticDefaultImports": true,
     "strict": true,
     "skipLibCheck": true,
-    "outDir": "./dist",
-    "rootDir": "./src"
+    "baseUrl": "./", // Ensures absolute imports work
+    "paths": {
+      "@/*": ["./src/*"]
+    }
   },
-  "ts-node": {
-    "esm": true,
-    "experimentalSpecifierResolution": "node"
-  },
-  "include": ["src/**/*"]
+  "include": ["./src/**/*.ts"],
+  "exclude": ["node_modules"]
 }

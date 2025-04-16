@@ -3,7 +3,7 @@ name: Deploy Node.js App to Contabo
 on:
   push:
     branches:
-      - main # Change if your default branch is different
+      - main
 
 jobs:
   deploy:
@@ -23,7 +23,7 @@ jobs:
           source: "."
           target: "/var/www/fs-be-node-project"
           overwrite: true
-          debug: true
+          strip_components: 1 # Prevents creating an extra directory level
 
       - name: Setup & Run Node.js App
         uses: appleboy/ssh-action@master
@@ -35,62 +35,62 @@ jobs:
           script: |
             echo "🔧 Starting deploy on $(hostname)"
 
+            # Navigate to project directory
             cd /var/www/fs-be-node-project || {
               echo "❌ Failed to find project directory!"
               exit 1
             }
 
-            echo "📁 Project directory:"
+            echo "📁 Project directory contents:"
             ls -la
 
-            # Install Node.js if not present
+            # Install Node.js (if needed)
             if ! command -v node &> /dev/null; then
               echo "📥 Installing Node.js..."
               curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
               sudo apt-get install -y nodejs
             else
-              echo "✅ Node.js version: $(node -v)"
+              echo "✅ Node.js $(node -v) already installed"
             fi
 
-            # Install PM2 globally if not available
+            # Install PM2 globally (if needed)
             if ! command -v pm2 &> /dev/null; then
               echo "📥 Installing PM2..."
               npm install -g pm2
             else
-              echo "✅ PM2 version: $(pm2 -v)"
+              echo "✅ PM2 $(pm2 -v) already installed"
             fi
 
-            # Install project dependencies
-            if [ -f "package.json" ]; then
-              echo "📦 Installing dependencies..."
-              export NODE_ENV=production
-              npm install --production
-            else
-              echo "❌ package.json not found!"
-              exit 1
-            fi
+            # Clean previous builds
+            echo "🧹 Cleaning previous build..."
+            npm run clean
+
+            # Install dependencies
+            echo "📦 Installing dependencies..."
+            npm ci --production
 
             # Run build
-            if npm run | grep -q "build"; then
-              echo "🏗️ Running build..."
-              npm run build
-            else
-              echo "⚠️ No build script found, skipping..."
-            fi
+            echo "🏗️ Building application..."
+            npm run build
 
-            # Stop existing process (safe fallback)
-            echo "🛑 Stopping existing PM2 app if running..."
+            # Stop existing PM2 process if running
+            echo "🛑 Stopping existing PM2 process..."
             pm2 delete fs-be-node-app 2>/dev/null || true
 
-            # Start app using PM2
-            echo "🚀 Starting Node app with PM2..."
-            pm2 start server.js --name "fs-be-node-app" || {
-              echo "❌ Failed to start app"
+            # Start application with PM2
+            echo "🚀 Starting application..."
+            pm2 start dist/index.js --name "fs-be-node-app" || {
+              echo "❌ Failed to start application"
               exit 1
             }
 
-            echo "💾 Saving PM2 process list"
+            # Save PM2 process list
+            echo "💾 Saving PM2 process list..."
             pm2 save
 
-            echo "🔁 Configuring PM2 to run on startup..."
-            pm2 startup systemd --silent
+            # Configure PM2 startup
+            echo "🔁 Setting up PM2 startup..."
+            pm2 startup systemd -u root --hp /root
+            pm2 save
+
+            echo "🎉 Deployment completed successfully!"
