@@ -3,7 +3,7 @@ import EventEmitter from "events";
 var url = "http://mylogger.io/loh";
 
 class Logger extends EventEmitter {
-  log(message) {
+  log(message: string) {
     // Send an http request
     console.log(message);
     // Step2: Trigger an event
