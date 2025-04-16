@@ -72,8 +72,7 @@ jobs:
 
             # Run build
             echo "🏗️ Building application..."
-            npm run build:ts
-            npm run build:ext
+            npm run build
 
             # Stop existing PM2 process if running
             echo "🛑 Stopping existing PM2 process..."
