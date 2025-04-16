@@ -25,42 +25,42 @@ jobs:
           overwrite: true
           strip_components: 1 # Prevents creating an extra directory level
 
-    - name: Setup & Run Node.js App
-  uses: appleboy/ssh-action@master
-  with:
-    host: ${{ secrets.SSH_HOST }}
-    username: root
-    key: ${{ secrets.SSH_PRIVATE_KEY }}
-    port: 22
-    script: |
-      echo "🔧 Starting deploy on $(hostname)"
-      
-      cd /var/www/fs-be-node-project || exit 1
+      - name: Setup & Run Node.js App
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: root
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: 22
+          script: |
+            echo "🔧 Starting deploy on $(hostname)"
 
-      # Clean and install
-      echo "🧹 Cleaning previous build..."
-      npm run clean
+            cd /var/www/fs-be-node-project || exit 1
 
-      echo "📦 Installing dependencies..."
-      npm ci --omit=dev
+            # Clean and install
+            echo "🧹 Cleaning previous build..."
+            npm run clean
 
-      echo "🏗️ Building application..."
-      npm run build
+            echo "📦 Installing dependencies..."
+            npm ci --omit=dev
 
-      # Verify build output
-      if [ ! -f "dist/index.js" ]; then
-        echo "❌ Build failed - dist/index.js not found"
-        exit 1
-      fi
+            echo "🏗️ Building application..."
+            npm run build
 
-      # PM2 management
-      echo "🛑 Stopping existing PM2 process..."
-      pm2 delete fs-be-node-app 2>/dev/null || true
+            # Verify build output
+            if [ ! -f "dist/index.js" ]; then
+              echo "❌ Build failed - dist/index.js not found"
+              exit 1
+            fi
 
-      echo "🚀 Starting application..."
-      pm2 start dist/index.js --name "fs-be-node-app" || exit 1
+            # PM2 management
+            echo "🛑 Stopping existing PM2 process..."
+            pm2 delete fs-be-node-app 2>/dev/null || true
 
-      echo "💾 Saving PM2 process list..."
-      pm2 save
+            echo "🚀 Starting application..."
+            pm2 start dist/index.js --name "fs-be-node-app" || exit 1
 
-      echo "🎉 Deployment completed successfully!!"
+            echo "💾 Saving PM2 process list..."
+            pm2 save
+
+            echo "🎉 Deployment completed successfully!"
