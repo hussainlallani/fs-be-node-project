@@ -68,7 +68,13 @@ jobs:
             # Install dependencies
             echo "📦 Installing dependencies..."
             npm ci --production
-            npm install -g typescript 
+
+            if ! command -v tsc &> /dev/null; then
+            echo "📥 TypeScript compiler not found, installing..."
+            npm install -g typescript
+            else
+            echo "✅ TypeScript compiler already installed: $(tsc -v)"
+            fi
 
             # Run build
             echo "🏗️ Building application..."
