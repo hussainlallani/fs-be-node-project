@@ -236,55 +236,55 @@
 //   }
 // }
 
-// export async function patchCourse(
-//   db: Db,
-//   id: string,
-//   updateData: Partial<Course>
-// ): Promise<Course> {
-//   if (!db) throw new Error("Database connection not provided");
-//   if (!/^[0-9a-fA-F]{24}$/.test(id)) {
-//     const error: ErrorWithStatus = new Error("Invalid ObjectId format");
-//     error.status = 400;
-//     throw error;
-//   }
-//   const collection = db.collection<Course>("courses");
-//   const updateDoc: Record<string, any> = {};
-//   if (updateData.title) updateDoc.title = updateData.title;
-//   if (updateData.instructor) updateDoc.instructor = updateData.instructor;
-//   if (updateData.tags) updateDoc.tags = updateData.tags;
-//   if (updateData.date) updateDoc.date = new Date(updateData.date);
-//   if (updateData.credits !== undefined) updateDoc.credits = updateData.credits;
-//   if (updateData.description !== undefined)
-//     updateDoc.description = updateData.description;
-//   if (updateData.isPublished !== undefined)
-//     updateDoc.isPublished = updateData.isPublished;
+export async function patchCourse(
+  db: Db,
+  id: string,
+  updateData: Partial<Course>
+): Promise<Course> {
+  if (!db) throw new Error("Database connection not provided");
+  if (!/^[0-9a-fA-F]{24}$/.test(id)) {
+    const error: ErrorWithStatus = new Error("Invalid ObjectId format");
+    error.status = 400;
+    throw error;
+  }
+  const collection = db.collection<Course>("courses");
+  const updateDoc: Record<string, any> = {};
+  if (updateData.title) updateDoc.title = updateData.title;
+  if (updateData.instructor) updateDoc.instructor = updateData.instructor;
+  if (updateData.tags) updateDoc.tags = updateData.tags;
+  if (updateData.date) updateDoc.date = new Date(updateData.date);
+  if (updateData.credits !== undefined) updateDoc.credits = updateData.credits;
+  if (updateData.description !== undefined)
+    updateDoc.description = updateData.description;
+  if (updateData.isPublished !== undefined)
+    updateDoc.isPublished = updateData.isPublished;
 
-//   try {
-//     const result = await collection.updateOne(
-//       { _id: new ObjectId(id) },
-//       { $set: updateDoc },
-//       { upsert: false }
-//     );
-//     if (result.matchedCount === 0) {
-//       const error: ErrorWithStatus = new Error("Course not found");
-//       error.status = 404;
-//       throw error;
-//     }
-//     return await getCourseById(db, id);
-//   } catch (err: any) {
-//     if (err.message.includes("Document failed validation")) {
-//       const error: ErrorWithStatus = new Error("Invalid course data");
-//       error.status = 400;
-//       error.details = err.errInfo?.details;
-//       throw error;
-//     }
-//     if (!err.status) {
-//       err.status = 500;
-//       err.message = "Failed to update course";
-//     }
-//     throw err;
-//   }
-// }
+  try {
+    const result = await collection.updateOne(
+      { _id: new ObjectId(id) },
+      { $set: updateDoc },
+      { upsert: false }
+    );
+    if (result.matchedCount === 0) {
+      const error: ErrorWithStatus = new Error("Course not found");
+      error.status = 404;
+      throw error;
+    }
+    return await getCourseById(db, id);
+  } catch (err: any) {
+    if (err.message.includes("Document failed validation")) {
+      const error: ErrorWithStatus = new Error("Invalid course data");
+      error.status = 400;
+      error.details = err.errInfo?.details;
+      throw error;
+    }
+    if (!err.status) {
+      err.status = 500;
+      err.message = "Failed to update course";
+    }
+    throw err;
+  }
+}
 
 // export async function deleteCourse(
 //   db: Db,
