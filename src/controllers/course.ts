@@ -1,5 +1,329 @@
-import { Db, ObjectId } from "mongodb";
+// import { Db, MongoClient, ObjectId } from "mongodb";
 
+// export interface ErrorWithStatus extends Error {
+//   status?: number;
+//   details?: unknown;
+// }
+
+// export interface Course {
+//   _id?: ObjectId;
+//   title: string;
+//   instructor: string;
+//   tags: string[];
+//   date: Date;
+//   credits: number;
+//   description?: string | null;
+//   isPublished?: boolean;
+// }
+
+// export interface PaginationOptions {
+//   limit?: number;
+//   page?: number;
+// }
+
+// export interface GetCoursesParams {
+//   limit: number;
+//   page: number;
+//   sort?: string;
+//   order?: "asc" | "desc";
+//   title?: string;
+//   instructor?: string;
+//   tags?: string | string[];
+//   description?: string;
+//   credits?: number;
+//   minCredits?: number;
+//   maxCredits?: number;
+//   isPublished?: boolean;
+//   startDate?: Date;
+//   endDate?: Date;
+// }
+
+// export interface CourseResponse {
+//   message: string;
+//   data: Course[];
+//   pagination: {
+//     total: number;
+//     limit: number;
+//     page: number;
+//     totalPages: number;
+//   };
+// }
+
+// export async function createCourse(
+//   client: MongoClient,
+//   db: Db,
+//   courseData: Course
+// ): Promise<Course> {
+//   if (!db) throw new Error("Database connection not provided");
+//   const collection = db.collection<Course>("courses");
+//   const document: Course = {
+//     title: courseData.title.trim(),
+//     instructor: courseData.instructor.trim(),
+//     tags: courseData.tags?.map((tag) => tag.trim()) || [],
+//     date: courseData.date ?? new Date(),
+//     credits: Math.min(Math.max(courseData.credits || 1, 1), 10), // Clamp between 1-10
+//     description: courseData.description?.trim() || null,
+//     isPublished: courseData.isPublished ?? false,
+//   };
+
+//   const session = client.startSession();
+//   try {
+//     session.startTransaction();
+//     const result = await collection.insertOne(document, { session });
+//     const inserted = await collection.findOne(
+//       { _id: result.insertedId },
+//       { session }
+//     );
+//     await session.commitTransaction();
+//     return inserted!;
+//   } catch (err: any) {
+//     await session.abortTransaction();
+//     if (err.code === 121) {
+//       // Validation error
+//       const error: ErrorWithStatus = new Error("Invalid course data");
+//       error.status = 400;
+//       error.details = err.errInfo?.details;
+//       throw error;
+//     }
+//     if (err.code === 11000) {
+//       // Duplicate key
+//       const error: ErrorWithStatus = new Error(
+//         "Course with this title already exists"
+//       );
+//       error.status = 409;
+//       throw error;
+//     }
+//     console.error("Database error:", err);
+//     throw err;
+//   } finally {
+//     session.endSession();
+//   }
+// }
+
+// export async function getCourses(db: Db, params: GetCoursesParams) {
+//   const {
+//     limit,
+//     page,
+//     sort,
+//     order,
+//     title,
+//     instructor,
+//     tags,
+//     description,
+//     credits,
+//     minCredits,
+//     maxCredits,
+//     isPublished,
+//     startDate,
+//     endDate,
+//   } = params;
+//   const skip = (page - 1) * limit;
+
+//   // Build query
+//   const query: any = {};
+//   if (title) query.title = { $regex: title, $options: "i" };
+//   if (instructor) query.instructor = { $regex: instructor, $options: "i" };
+//   if (tags) query.tags = { $in: [tags] };
+//   if (description) query.description = { $regex: description, $options: "i" };
+//   if (credits !== undefined) query.credits = credits;
+//   if (minCredits !== undefined || maxCredits !== undefined) {
+//     query.credits = {};
+//     if (minCredits !== undefined) query.credits.$gte = minCredits;
+//     if (maxCredits !== undefined) query.credits.$lte = maxCredits;
+//   }
+//   if (isPublished !== undefined) query.isPublished = isPublished;
+//   if (startDate || endDate) {
+//     query.date = {};
+//     if (startDate) query.date.$gte = startDate;
+//     if (endDate) query.date.$lte = endDate;
+//   }
+
+//   // Build sort options
+//   const sortOptions: any = {};
+//   if (sort && order) {
+//     sortOptions[sort] = order === "asc" ? 1 : -1;
+//   }
+
+//   try {
+//     const courses = await db
+//       .collection<Course>("courses")
+//       .find(query)
+//       .sort(sortOptions)
+//       .skip(skip)
+//       .limit(limit)
+//       .toArray();
+//     return courses;
+//   } catch (err) {
+//     const error: ErrorWithStatus = new Error("Failed to fetch courses");
+//     error.status = 500;
+//     throw error;
+//   }
+// }
+
+// export async function getCourseById(db: Db, id: string): Promise<Course> {
+//   if (!db) throw new Error("Database connection not provided");
+//   if (!/^[0-9a-fA-F]{24}$/.test(id)) {
+//     const error: ErrorWithStatus = new Error("Invalid ObjectId format");
+//     error.status = 400;
+//     throw error;
+//   }
+//   const collection = db.collection<Course>("courses");
+//   try {
+//     const course = await collection.findOne({ _id: new ObjectId(id) });
+//     if (!course) {
+//       const error: ErrorWithStatus = new Error("Course not found");
+//       error.status = 404;
+//       throw error;
+//     }
+//     return course;
+//   } catch (err: any) {
+//     if (!err.status) {
+//       err.status = 500;
+//       err.message = "Failed to retrieve course";
+//     }
+//     throw err;
+//   }
+// }
+
+// export async function updateCourse(
+//   db: Db,
+//   id: string,
+//   updateData: Course
+// ): Promise<Course> {
+//   if (!db) throw new Error("Database connection not provided");
+//   if (!/^[0-9a-fA-F]{24}$/.test(id)) {
+//     const error: ErrorWithStatus = new Error("Invalid ObjectId format");
+//     error.status = 400;
+//     throw error;
+//   }
+//   const collection = db.collection<Course>("courses");
+//   const updateDoc = {
+//     $set: {
+//       title: updateData.title,
+//       instructor: updateData.instructor,
+//       tags: updateData.tags,
+//       date: updateData.date ?? new Date(),
+//       credits: updateData.credits,
+//       description: updateData.description ?? null,
+//       isPublished: updateData.isPublished ?? false,
+//     },
+//   };
+
+//   try {
+//     const result = await collection.updateOne(
+//       { _id: new ObjectId(id) },
+//       updateDoc,
+//       { upsert: false }
+//     );
+//     if (result.matchedCount === 0) {
+//       const error: ErrorWithStatus = new Error("Course not found");
+//       error.status = 404;
+//       throw error;
+//     }
+//     return await getCourseById(db, id);
+//   } catch (err: any) {
+//     if (err.message.includes("Document failed validation")) {
+//       const error: ErrorWithStatus = new Error("Invalid course data");
+//       error.status = 400;
+//       error.details = err.errInfo?.details;
+//       throw error;
+//     }
+//     if (!err.status) {
+//       err.status = 500;
+//       err.message = "Failed to update course";
+//     }
+//     throw err;
+//   }
+// }
+
+// export async function patchCourse(
+//   db: Db,
+//   id: string,
+//   updateData: Partial<Course>
+// ): Promise<Course> {
+//   if (!db) throw new Error("Database connection not provided");
+//   if (!/^[0-9a-fA-F]{24}$/.test(id)) {
+//     const error: ErrorWithStatus = new Error("Invalid ObjectId format");
+//     error.status = 400;
+//     throw error;
+//   }
+//   const collection = db.collection<Course>("courses");
+//   const updateDoc: Record<string, any> = {};
+//   if (updateData.title) updateDoc.title = updateData.title;
+//   if (updateData.instructor) updateDoc.instructor = updateData.instructor;
+//   if (updateData.tags) updateDoc.tags = updateData.tags;
+//   if (updateData.date) updateDoc.date = new Date(updateData.date);
+//   if (updateData.credits !== undefined) updateDoc.credits = updateData.credits;
+//   if (updateData.description !== undefined)
+//     updateDoc.description = updateData.description;
+//   if (updateData.isPublished !== undefined)
+//     updateDoc.isPublished = updateData.isPublished;
+
+//   try {
+//     const result = await collection.updateOne(
+//       { _id: new ObjectId(id) },
+//       { $set: updateDoc },
+//       { upsert: false }
+//     );
+//     if (result.matchedCount === 0) {
+//       const error: ErrorWithStatus = new Error("Course not found");
+//       error.status = 404;
+//       throw error;
+//     }
+//     return await getCourseById(db, id);
+//   } catch (err: any) {
+//     if (err.message.includes("Document failed validation")) {
+//       const error: ErrorWithStatus = new Error("Invalid course data");
+//       error.status = 400;
+//       error.details = err.errInfo?.details;
+//       throw error;
+//     }
+//     if (!err.status) {
+//       err.status = 500;
+//       err.message = "Failed to update course";
+//     }
+//     throw err;
+//   }
+// }
+
+// export async function deleteCourse(
+//   db: Db,
+//   id: string
+// ): Promise<{ message: string }> {
+//   if (!db) throw new Error("Database connection not provided");
+//   if (!/^[0-9a-fA-F]{24}$/.test(id)) {
+//     const error: ErrorWithStatus = new Error("Invalid ObjectId format");
+//     error.status = 400;
+//     throw error;
+//   }
+//   const collection = db.collection<Course>("courses");
+//   try {
+//     const result = await collection.deleteOne({ _id: new ObjectId(id) });
+//     if (result.deletedCount === 0) {
+//       const error: ErrorWithStatus = new Error("Course not found");
+//       error.status = 404;
+//       throw error;
+//     }
+//     return { message: "Course deleted successfully" };
+//   } catch (err: any) {
+//     if (!err.status) {
+//       err.status = 500;
+//       err.message = "Failed to delete course";
+//     }
+//     throw err;
+//   }
+// }
+
+import {
+  Db,
+  MongoClient,
+  ObjectId,
+  Filter,
+  WithId,
+  UpdateFilter,
+} from "mongodb";
+
+// ==================== Interfaces ====================
 export interface ErrorWithStatus extends Error {
   status?: number;
   details?: unknown;
@@ -21,14 +345,12 @@ export interface PaginationOptions {
   page?: number;
 }
 
-export interface GetCoursesParams {
-  limit: number;
-  page: number;
+export interface GetCoursesParams extends PaginationOptions {
   sort?: string;
   order?: "asc" | "desc";
   title?: string;
   instructor?: string;
-  tags?: string;
+  tags?: string | string[];
   description?: string;
   credits?: number;
   minCredits?: number;
@@ -38,53 +360,105 @@ export interface GetCoursesParams {
   endDate?: Date;
 }
 
-export interface CourseResponse {
-  message: string;
-  data: Course[];
+export interface PaginatedResponse<T> {
+  data: T[];
   pagination: {
     total: number;
     limit: number;
     page: number;
     totalPages: number;
+    hasNextPage: boolean;
+    hasPreviousPage: boolean;
   };
 }
 
+// ==================== Utility Functions ====================
+function validateObjectId(id: string): ObjectId {
+  if (!ObjectId.isValid(id)) {
+    const error: ErrorWithStatus = new Error("Invalid ObjectId format");
+    error.status = 400;
+    throw error;
+  }
+  return new ObjectId(id);
+}
+
+function buildCreditsQuery(
+  credits?: number,
+  minCredits?: number,
+  maxCredits?: number
+): Record<string, number> | undefined {
+  if (credits !== undefined) return { credits };
+
+  const query: Record<string, number> = {};
+  if (minCredits !== undefined) query.$gte = minCredits;
+  if (maxCredits !== undefined) query.$lte = maxCredits;
+
+  return Object.keys(query).length ? query : undefined;
+}
+
+// ==================== Service Functions ====================
 export async function createCourse(
+  client: MongoClient,
   db: Db,
-  courseData: Course
-): Promise<Course> {
+  courseData: Omit<Course, "_id">
+): Promise<WithId<Course>> {
   if (!db) throw new Error("Database connection not provided");
+
   const collection = db.collection<Course>("courses");
-  const document: Course = {
-    title: courseData.title,
-    instructor: courseData.instructor,
-    tags: courseData.tags,
+  const document: Omit<Course, "_id"> = {
+    title: courseData.title.trim(),
+    instructor: courseData.instructor.trim(),
+    tags: courseData.tags?.map((tag) => tag.trim()) || [],
     date: courseData.date ?? new Date(),
-    credits: courseData.credits,
-    description: courseData.description ?? null,
+    credits: Math.min(Math.max(courseData.credits || 1, 1)), // Minimum 1 credit
+    description: courseData.description?.trim() || null,
     isPublished: courseData.isPublished ?? false,
   };
 
+  const session = client.startSession();
   try {
-    const result = await collection.insertOne(document);
-    return { ...document, _id: result.insertedId };
+    session.startTransaction();
+    const result = await collection.insertOne(document, { session });
+    const inserted = await collection.findOne(
+      { _id: result.insertedId },
+      { session }
+    );
+    if (!inserted) throw new Error("Failed to retrieve created course");
+    await session.commitTransaction();
+    return inserted;
   } catch (err: any) {
-    if (err.message.includes("Document failed validation")) {
+    await session.abortTransaction();
+    if (err.code === 121) {
+      // Validation error
       const error: ErrorWithStatus = new Error("Invalid course data");
       error.status = 400;
       error.details = err.errInfo?.details;
       throw error;
     }
+    if (err.code === 11000) {
+      // Duplicate key
+      const error: ErrorWithStatus = new Error(
+        "Course with this title already exists"
+      );
+      error.status = 409;
+      throw error;
+    }
+    console.error("Database error:", err);
     throw err;
+  } finally {
+    session.endSession();
   }
 }
 
-export async function getCourses(db: Db, params: GetCoursesParams) {
+export async function getCourses(
+  db: Db,
+  params: GetCoursesParams
+): Promise<PaginatedResponse<WithId<Course>>> {
   const {
-    limit,
-    page,
+    limit = 10,
+    page = 1,
     sort,
-    order,
+    order = "asc",
     title,
     instructor,
     tags,
@@ -96,21 +470,32 @@ export async function getCourses(db: Db, params: GetCoursesParams) {
     startDate,
     endDate,
   } = params;
+
+  // Validate input
+  if (limit <= 0 || page <= 0) {
+    const error: ErrorWithStatus = new Error(
+      "Limit and page must be positive numbers"
+    );
+    error.status = 400;
+    throw error;
+  }
+
   const skip = (page - 1) * limit;
+  const query: Filter<Course> = {};
 
   // Build query
-  const query: any = {};
   if (title) query.title = { $regex: title, $options: "i" };
   if (instructor) query.instructor = { $regex: instructor, $options: "i" };
-  if (tags) query.tags = { $in: [tags] };
   if (description) query.description = { $regex: description, $options: "i" };
-  if (credits !== undefined) query.credits = credits;
-  if (minCredits !== undefined || maxCredits !== undefined) {
-    query.credits = {};
-    if (minCredits !== undefined) query.credits.$gte = minCredits;
-    if (maxCredits !== undefined) query.credits.$lte = maxCredits;
+  if (tags) {
+    query.tags = Array.isArray(tags) ? { $all: tags } : { $in: [tags] };
   }
+
+  const creditsQuery = buildCreditsQuery(credits, minCredits, maxCredits);
+  if (creditsQuery) query.credits = creditsQuery;
+
   if (isPublished !== undefined) query.isPublished = isPublished;
+
   if (startDate || endDate) {
     query.date = {};
     if (startDate) query.date.$gte = startDate;
@@ -118,37 +503,52 @@ export async function getCourses(db: Db, params: GetCoursesParams) {
   }
 
   // Build sort options
-  const sortOptions: any = {};
-  if (sort && order) {
-    sortOptions[sort] = order === "asc" ? 1 : -1;
-  }
+  const sortOptions: Record<string, 1 | -1> = {};
+  if (sort) sortOptions[sort] = order === "asc" ? 1 : -1;
 
   try {
-    const courses = await db
-      .collection<Course>("courses")
-      .find(query)
-      .sort(sortOptions)
-      .skip(skip)
-      .limit(limit)
-      .toArray();
-    return courses;
+    const collection = db.collection<Course>("courses");
+
+    const [data, total] = await Promise.all([
+      collection
+        .find(query)
+        .sort(sortOptions)
+        .skip(skip)
+        .limit(limit)
+        .toArray(),
+      collection.countDocuments(query),
+    ]);
+
+    return {
+      data,
+      pagination: {
+        total,
+        limit,
+        page,
+        totalPages: Math.ceil(total / limit),
+        hasNextPage: page * limit < total,
+        hasPreviousPage: page > 1,
+      },
+    };
   } catch (err) {
+    console.error("Database query failed:", err);
     const error: ErrorWithStatus = new Error("Failed to fetch courses");
     error.status = 500;
     throw error;
   }
 }
 
-export async function getCourseById(db: Db, id: string): Promise<Course> {
+export async function getCourseById(
+  db: Db,
+  id: string
+): Promise<WithId<Course>> {
   if (!db) throw new Error("Database connection not provided");
-  if (!/^[0-9a-fA-F]{24}$/.test(id)) {
-    const error: ErrorWithStatus = new Error("Invalid ObjectId format");
-    error.status = 400;
-    throw error;
-  }
+
   const collection = db.collection<Course>("courses");
+  const _id = validateObjectId(id);
+
   try {
-    const course = await collection.findOne({ _id: new ObjectId(id) });
+    const course = await collection.findOne({ _id });
     if (!course) {
       const error: ErrorWithStatus = new Error("Course not found");
       error.status = 404;
@@ -156,139 +556,93 @@ export async function getCourseById(db: Db, id: string): Promise<Course> {
     }
     return course;
   } catch (err: any) {
-    if (!err.status) {
-      err.status = 500;
-      err.message = "Failed to retrieve course";
-    }
-    throw err;
+    console.error("Database error:", err);
+    const error: ErrorWithStatus = new Error("Failed to retrieve course");
+    error.status = 500;
+    throw error;
   }
 }
 
 export async function updateCourse(
   db: Db,
   id: string,
-  updateData: Course
-): Promise<Course> {
+  updateData: Partial<Course>
+): Promise<WithId<Course>> {
   if (!db) throw new Error("Database connection not provided");
-  if (!/^[0-9a-fA-F]{24}$/.test(id)) {
-    const error: ErrorWithStatus = new Error("Invalid ObjectId format");
-    error.status = 400;
-    throw error;
-  }
+
   const collection = db.collection<Course>("courses");
-  const updateDoc = {
+  const _id = validateObjectId(id);
+
+  const updateDoc: UpdateFilter<Course> = {
     $set: {
-      title: updateData.title,
-      instructor: updateData.instructor,
-      tags: updateData.tags,
-      date: updateData.date ?? new Date(),
-      credits: updateData.credits,
-      description: updateData.description ?? null,
-      isPublished: updateData.isPublished ?? false,
+      ...(updateData.title && { title: updateData.title.trim() }),
+      ...(updateData.instructor && {
+        instructor: updateData.instructor.trim(),
+      }),
+      ...(updateData.tags && {
+        tags: updateData.tags.map((tag) => tag.trim()),
+      }),
+      ...(updateData.date && { date: updateData.date }),
+      ...(updateData.credits !== undefined && { credits: updateData.credits }),
+      ...(updateData.description !== undefined && {
+        description: updateData.description?.trim() || null,
+      }),
+      ...(updateData.isPublished !== undefined && {
+        isPublished: updateData.isPublished,
+      }),
     },
   };
 
   try {
-    const result = await collection.updateOne(
-      { _id: new ObjectId(id) },
-      updateDoc,
-      { upsert: false }
-    );
-    if (result.matchedCount === 0) {
+    const result = await collection.findOneAndUpdate({ _id }, updateDoc, {
+      returnDocument: "after",
+      // Omit projection entirely to return full document
+    });
+
+    console.log("result: ", result);
+
+    if (!result) {
       const error: ErrorWithStatus = new Error("Course not found");
       error.status = 404;
       throw error;
     }
-    return await getCourseById(db, id);
+    return result;
   } catch (err: any) {
-    if (err.message.includes("Document failed validation")) {
+    if (err.code === 121) {
+      // Validation error
       const error: ErrorWithStatus = new Error("Invalid course data");
       error.status = 400;
       error.details = err.errInfo?.details;
       throw error;
     }
-    if (!err.status) {
-      err.status = 500;
-      err.message = "Failed to update course";
-    }
-    throw err;
-  }
-}
-
-export async function patchCourse(
-  db: Db,
-  id: string,
-  updateData: Partial<Course>
-): Promise<Course> {
-  if (!db) throw new Error("Database connection not provided");
-  if (!/^[0-9a-fA-F]{24}$/.test(id)) {
-    const error: ErrorWithStatus = new Error("Invalid ObjectId format");
-    error.status = 400;
+    console.error("Database error:", err);
+    const error: ErrorWithStatus = new Error("Failed to update course");
+    error.status = 500;
     throw error;
-  }
-  const collection = db.collection<Course>("courses");
-  const updateDoc: Record<string, any> = {};
-  if (updateData.title) updateDoc.title = updateData.title;
-  if (updateData.instructor) updateDoc.instructor = updateData.instructor;
-  if (updateData.tags) updateDoc.tags = updateData.tags;
-  if (updateData.date) updateDoc.date = new Date(updateData.date);
-  if (updateData.credits !== undefined) updateDoc.credits = updateData.credits;
-  if (updateData.description !== undefined)
-    updateDoc.description = updateData.description;
-  if (updateData.isPublished !== undefined)
-    updateDoc.isPublished = updateData.isPublished;
-
-  try {
-    const result = await collection.updateOne(
-      { _id: new ObjectId(id) },
-      { $set: updateDoc },
-      { upsert: false }
-    );
-    if (result.matchedCount === 0) {
-      const error: ErrorWithStatus = new Error("Course not found");
-      error.status = 404;
-      throw error;
-    }
-    return await getCourseById(db, id);
-  } catch (err: any) {
-    if (err.message.includes("Document failed validation")) {
-      const error: ErrorWithStatus = new Error("Invalid course data");
-      error.status = 400;
-      error.details = err.errInfo?.details;
-      throw error;
-    }
-    if (!err.status) {
-      err.status = 500;
-      err.message = "Failed to update course";
-    }
-    throw err;
   }
 }
 
 export async function deleteCourse(
   db: Db,
   id: string
-): Promise<{ message: string }> {
+): Promise<{ deletedCount: number }> {
   if (!db) throw new Error("Database connection not provided");
-  if (!/^[0-9a-fA-F]{24}$/.test(id)) {
-    const error: ErrorWithStatus = new Error("Invalid ObjectId format");
-    error.status = 400;
-    throw error;
-  }
+
   const collection = db.collection<Course>("courses");
+  const _id = validateObjectId(id);
+
   try {
-    const result = await collection.deleteOne({ _id: new ObjectId(id) });
+    const result = await collection.deleteOne({ _id });
     if (result.deletedCount === 0) {
       const error: ErrorWithStatus = new Error("Course not found");
       error.status = 404;
       throw error;
     }
-    return { message: "Course deleted successfully" };
+    return { deletedCount: result.deletedCount };
   } catch (err: any) {
-    if (!err.status) {
-      err.status = 500;
-      err.message = "Failed to delete course";
-    }
-    throw err;
+    console.error("Database error:", err);
+    const error: ErrorWithStatus = new Error("Failed to delete course");
+    error.status = 500;
+    throw error;
   }
 }
