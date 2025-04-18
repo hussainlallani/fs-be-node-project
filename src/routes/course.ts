@@ -148,7 +148,7 @@ router.patch(
   }
 );
 
-// DELETE course
+// DELETE a course
 router.delete(
   "/:id",
   validateParams(idSchema),
