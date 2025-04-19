@@ -236,56 +236,6 @@
 //   }
 // }
 
-export async function patchCourse(
-  db: Db,
-  id: string,
-  updateData: Partial<Course>
-): Promise<Course> {
-  if (!db) throw new Error("Database connection not provided");
-  if (!/^[0-9a-fA-F]{24}$/.test(id)) {
-    const error: ErrorWithStatus = new Error("Invalid ObjectId format");
-    error.status = 400;
-    throw error;
-  }
-  const collection = db.collection<Course>("courses");
-  const updateDoc: Record<string, any> = {};
-  if (updateData.title) updateDoc.title = updateData.title;
-  if (updateData.instructor) updateDoc.instructor = updateData.instructor;
-  if (updateData.tags) updateDoc.tags = updateData.tags;
-  if (updateData.date) updateDoc.date = new Date(updateData.date);
-  if (updateData.credits !== undefined) updateDoc.credits = updateData.credits;
-  if (updateData.description !== undefined)
-    updateDoc.description = updateData.description;
-  if (updateData.isPublished !== undefined)
-    updateDoc.isPublished = updateData.isPublished;
-
-  try {
-    const result = await collection.updateOne(
-      { _id: new ObjectId(id) },
-      { $set: updateDoc },
-      { upsert: false }
-    );
-    if (result.matchedCount === 0) {
-      const error: ErrorWithStatus = new Error("Course not found");
-      error.status = 404;
-      throw error;
-    }
-    return await getCourseById(db, id);
-  } catch (err: any) {
-    if (err.message.includes("Document failed validation")) {
-      const error: ErrorWithStatus = new Error("Invalid course data");
-      error.status = 400;
-      error.details = err.errInfo?.details;
-      throw error;
-    }
-    if (!err.status) {
-      err.status = 500;
-      err.message = "Failed to update course";
-    }
-    throw err;
-  }
-}
-
 // export async function deleteCourse(
 //   db: Db,
 //   id: string
@@ -397,11 +347,11 @@ function buildCreditsQuery(
 }
 
 // ==================== Service Functions ====================
-export async function createCourse(
+export const createCourse = async (
   client: MongoClient,
   db: Db,
   courseData: Omit<Course, "_id">
-): Promise<WithId<Course>> {
+): Promise<WithId<Course>> => {
   if (!db) throw new Error("Database connection not provided");
 
   const collection = db.collection<Course>("courses");
@@ -448,7 +398,7 @@ export async function createCourse(
   } finally {
     session.endSession();
   }
-}
+};
 
 export async function getCourses(
   db: Db,
@@ -558,6 +508,77 @@ export async function getCourseById(
   } catch (err: any) {
     console.error("Database error:", err);
     const error: ErrorWithStatus = new Error("Failed to retrieve course");
+    error.status = 500;
+    throw error;
+  }
+}
+
+export async function patchCourse(
+  db: Db,
+  id: string,
+  updateData: Partial<Course>
+): Promise<WithId<Course>> {
+  if (!db) throw new Error("Database connection not provided");
+
+  const collection = db.collection<Course>("courses");
+  const _id = validateObjectId(id); // Reuse the validation function from earlier
+
+  // Build the update document with proper typing and sanitization
+  const updateDoc: UpdateFilter<Course> = {
+    $set: {
+      ...(updateData.title && { title: updateData.title.trim() }),
+      ...(updateData.instructor && {
+        instructor: updateData.instructor.trim(),
+      }),
+      ...(updateData.tags && {
+        tags: updateData.tags.map((tag) => tag.trim()),
+      }),
+      ...(updateData.date && { date: new Date(updateData.date) }),
+      ...(updateData.credits !== undefined && { credits: updateData.credits }),
+      ...(updateData.description !== undefined && {
+        description: updateData.description?.trim() || null,
+      }),
+      ...(updateData.isPublished !== undefined && {
+        isPublished: updateData.isPublished,
+      }),
+    },
+    $currentDate: {
+      updatedAt: true, // Optional: Add an updatedAt timestamp
+    },
+  };
+
+  try {
+    // Option 1: Atomic findOneAndUpdate approach
+    const result = await collection.findOneAndUpdate({ _id }, updateDoc, {
+      returnDocument: "after",
+      includeResultMetadata: true,
+    });
+
+    if (!result.ok || !result.value) {
+      const error: ErrorWithStatus = new Error("Course not found");
+      error.status = 404;
+      throw error;
+    }
+    return result.value;
+  } catch (err: any) {
+    if (err.code === 121) {
+      // MongoDB validation error code
+      const error: ErrorWithStatus = new Error("Invalid course data");
+      error.status = 400;
+      error.details = err.errInfo?.details;
+      throw error;
+    }
+    if (err.code === 11000) {
+      // Duplicate key error
+      const error: ErrorWithStatus = new Error(
+        "Course with this title already exists"
+      );
+      error.status = 409;
+      throw error;
+    }
+
+    console.error("Database error:", err);
+    const error: ErrorWithStatus = new Error("Failed to update course");
     error.status = 500;
     throw error;
   }

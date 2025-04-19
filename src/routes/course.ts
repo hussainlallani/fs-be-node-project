@@ -104,7 +104,8 @@ router.post(
   async (req: CustomRequest, res: Response, next: NextFunction) => {
     try {
       routeDebugger("POST /api/course received:", req.body);
-      const course = await createCourse(req.db!, req.body);
+      const client = (req.db as any).client; // Or however you access the client
+      const course = await createCourse(client, req.db!, req.body);
       res.status(201).json(course);
     } catch (err) {
       next(err);

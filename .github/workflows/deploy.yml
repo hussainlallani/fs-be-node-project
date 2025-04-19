@@ -70,10 +70,10 @@ jobs:
             npm ci --production
 
             if ! command -v tsc &> /dev/null; then
-            echo "📥 TypeScript compiler not found, installing..."
-            npm install -g typescript
+              echo "📥 TypeScript compiler not found, installing..."
+              npm install -g typescript
             else
-            echo "✅ TypeScript compiler already installed: $(tsc -v)"
+              echo "✅ TypeScript compiler already installed: $(tsc -v)"
             fi
 
             # Run build
@@ -84,8 +84,12 @@ jobs:
             echo "🛑 Stopping existing PM2 process..."
             pm2 delete fs-be-node-app 2>/dev/null || true
 
+            # Start MongoDB with the correct config
+            echo "🛠️ Starting MongoDB with custom config..."
+            pm2 start "mongod --config /etc/mongod_fs_be_node_project.conf" --name "mongo_fs_be_node_project"
+
             # Start application with PM2
-            echo "🚀 Starting application..."
+            echo "🚀 Starting application with PM2..."
             pm2 start dist/index.js --name "fs-be-node-app" || {
               echo "❌ Failed to start application"
               exit 1
