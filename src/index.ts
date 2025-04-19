@@ -59,7 +59,7 @@ app.use(
   }
 );
 
-// Start server
+// Start a server
 async function startServer() {
   try {
     await initializeMongoDB();
