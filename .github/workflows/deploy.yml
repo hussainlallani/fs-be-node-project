@@ -86,7 +86,7 @@ jobs:
 
             # Start MongoDB with the correct config
             echo "🛠️ Starting MongoDB with custom config..."
-            pm2 start "mongod --config /etc/mongod_fs_be_node_project.conf" --name "mongo_fs_be_node_project" --watch --no-daemon --single
+            pm2 start "mongod --config /etc/mongod_fs_be_node_project.conf" --name "mongo_fs_be_node_project"
 
             # Stop existing Node.js application (fs-be-node-app) if running
             echo "🛑 Stopping existing Node.js application..."
