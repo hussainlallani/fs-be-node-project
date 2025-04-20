@@ -7,13 +7,13 @@ import {
   partialCourseSchema,
   courseQuerySchema,
   idSchema,
-} from "../validators/courseSchemas";
+} from "../validators/courseSchemas.js";
 
 import {
   validateBody,
   validateQuery,
   validateParams,
-} from "../middleware/validate";
+} from "../middleware/validate.js";
 
 import {
   createCourse,
@@ -22,10 +22,10 @@ import {
   updateCourse,
   patchCourse,
   deleteCourse,
-} from "../controllers/course";
+} from "../controllers/course.js";
 
-import { CustomRequest } from "../index";
-import { ErrorWithStatus } from "../controllers/course";
+import { CustomRequest } from "../index.js";
+import { ErrorWithStatus } from "../controllers/course.js";
 
 const routeDebugger = debug("app:route");
 export const router = express.Router();

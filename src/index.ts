@@ -3,10 +3,10 @@ import express, { Request, Response, NextFunction } from "express";
 import helmet from "helmet";
 import morgan from "morgan";
 import { Db } from "mongodb";
-import { router as courseRouter } from "./routes/course";
+import { router as courseRouter } from "./routes/course.js";
 import debug from "debug";
-import { ErrorWithStatus } from "./controllers/course";
-import { initializeMongoDB, getDb, closeMongoDB } from "./db/mongoDB";
+import { ErrorWithStatus } from "./controllers/course.js";
+import { initializeMongoDB, getDb, closeMongoDB } from "./db/mongoDB.js";
 
 dotenv.config();
 

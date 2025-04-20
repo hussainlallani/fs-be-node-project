@@ -7,7 +7,8 @@ dotenv.config();
 const dbDebugger = debug("app:db");
 
 const mongoUri =
-  process.env.MONGODB_URI || "mongodb://157.173.198.244:27017/express-app";
+  process.env.MONGODB_URI ||
+  "mongodb://157.173.198.244:27017/express-app/?replicaSet=rs0";
 
 // Configure MongoClient with connection pool
 const client = new MongoClient(mongoUri, {
