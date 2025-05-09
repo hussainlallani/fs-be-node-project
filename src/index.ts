@@ -67,7 +67,7 @@ async function startServer() {
   try {
     await initializeMongoDB();
     app.listen(PORT, () => {
-      console.log(`Server running on http://${HOST}:${PORT}`);
+      console.log(`Server running onn http://${HOST}:${PORT}`);
     });
   } catch (err) {
     console.error("Failed to start server:", err);
