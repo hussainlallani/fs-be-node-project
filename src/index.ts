@@ -15,6 +15,9 @@ const startupDebugger = debug("app:startup");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+const HOST = process.env.APP_HOST;
+
+console.log("Host: ", HOST);
 
 // Express Setup
 app.use(helmet());
@@ -64,7 +67,7 @@ async function startServer() {
   try {
     await initializeMongoDB();
     app.listen(PORT, () => {
-      console.log(`Server running on http://localhost:${PORT}`);
+      console.log(`Server running on http://${HOST}:${PORT}`);
     });
   } catch (err) {
     console.error("Failed to start server:", err);
