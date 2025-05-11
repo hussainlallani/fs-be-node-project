@@ -1,4 +1,4 @@
-import { Course, GetCoursesParams, ICourse } from "@/models/course.model";
+import { Course, GetCoursesParams, ICourse } from "../models/course.model.js";
 import mongoose, { SortOrder } from "mongoose";
 
 export async function createCourse(data: Partial<ICourse>): Promise<ICourse> {

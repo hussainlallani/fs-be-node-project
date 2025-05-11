@@ -408,8 +408,9 @@
 //   }
 // }
 
-import { Course, ICourse } from "@/models/course.model";
 import mongoose, { SortOrder } from "mongoose";
+
+import { Course, ICourse } from "../models/course.model.js";
 
 export interface ErrorWithStatus extends Error {
   status?: number;

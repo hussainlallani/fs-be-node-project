@@ -1,7 +1,7 @@
 import { Response, NextFunction, Request } from "express";
 import { z } from "zod";
 // import { CustomRequest } from "../index";
-import { ErrorWithStatus } from "@/controllers/course.control.js";
+import { ErrorWithStatus } from "../controllers/course.control.js";
 
 export const validateBody =
   <Output, Input = Output>(schema: z.ZodType<Output, any, Input>) =>

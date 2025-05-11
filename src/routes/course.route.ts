@@ -22,10 +22,10 @@ import {
   updateCourse,
   // patchCourse,
   deleteCourse,
-} from "@/controllers/course.control.js";
-import { GetCoursesParams } from "@/models/course.model.js";
-import { validateQuery } from "@/middleware/validate.js";
-import { courseQuerySchema } from "@/validators/courseSchemas.js";
+} from "../controllers/course.control.js";
+import { validateQuery } from "../middleware/validate.js";
+import { courseQuerySchema } from "../validators/courseSchemas.js";
+import { GetCoursesParams } from "../models/course.model.js";
 
 // import { CustomRequest } from "../index.js";
 // import { ErrorWithStatus } from "../controllers/course.js";
