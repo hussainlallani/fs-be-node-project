@@ -1,11 +1,11 @@
-import { Response, NextFunction } from "express";
+import { Response, NextFunction, Request } from "express";
 import { z } from "zod";
-import { CustomRequest } from "../index";
-import { ErrorWithStatus } from "../controllers/course";
+// import { CustomRequest } from "../index";
+import { ErrorWithStatus } from "@/controllers/course.control.js";
 
 export const validateBody =
   <Output, Input = Output>(schema: z.ZodType<Output, any, Input>) =>
-  async (req: CustomRequest, res: Response, next: NextFunction) => {
+  async (req: Request, res: Response, next: NextFunction) => {
     try {
       req.body = await schema.parseAsync(req.body);
       next();
@@ -19,7 +19,7 @@ export const validateBody =
 
 export const validateQuery =
   <Output, Input = Output>(schema: z.ZodType<Output, any, Input>) =>
-  async (req: CustomRequest, res: Response, next: NextFunction) => {
+  async (req: Request, res: Response, next: NextFunction) => {
     try {
       req.query = (await schema.parseAsync(req.query)) as any;
       next();
@@ -33,7 +33,7 @@ export const validateQuery =
 
 export const validateParams =
   <Output, Input = Output>(schema: z.ZodType<Output, any, Input>) =>
-  async (req: CustomRequest, res: Response, next: NextFunction) => {
+  async (req: Request, res: Response, next: NextFunction) => {
     try {
       req.params = (await schema.parseAsync(req.params)) as any;
       next();

@@ -1,12 +1,18 @@
-import dotenv from "dotenv";
 import express, { Request, Response, NextFunction } from "express";
+import dotenv from "dotenv";
 import helmet from "helmet";
 import morgan from "morgan";
-import { Db } from "mongodb";
-import { router as courseRouter } from "./routes/course.js";
 import debug from "debug";
-import { ErrorWithStatus } from "./controllers/course.js";
-import { initializeMongoDB, getDb, closeMongoDB } from "./db/mongoDB.js";
+
+// import { Db } from "mongodb";
+// import { ErrorWithStatus } from "./controllers/course.js";
+import {
+  initializeMongoDB,
+  // getDb,
+  closeMongoDB,
+} from "./databases/mongo.database.js";
+import { router as courseRouter } from "./routes/course.route.js";
+import { ErrorWithStatus } from "./controllers/course.control.js";
 
 dotenv.config();
 
@@ -34,19 +40,19 @@ if (process.env.NODE_ENV === "development") {
 }
 
 // Middleware to attach db
-export interface CustomRequest extends Request {
-  db?: Db;
-}
-app.use(async (req: CustomRequest, res: Response, next: NextFunction) => {
-  try {
-    await initializeMongoDB();
-    req.db = getDb();
-    next();
-  } catch (err) {
-    console.error("Database initialization failed:", err);
-    res.status(503).json({ error: "Database not initialized" });
-  }
-});
+// export interface CustomRequest extends Request {
+//   db?: Db;
+// }
+// app.use(async (req: CustomRequest, res: Response, next: NextFunction) => {
+//   try {
+//     await initializeMongoDB();
+//     req.db = getDb();
+//     next();
+//   } catch (err) {
+//     console.error("Database initialization failed:", err);
+//     res.status(503).json({ error: "Database not initialized" });
+//   }
+// });
 
 // Routes
 app.use("/api/course", courseRouter);
