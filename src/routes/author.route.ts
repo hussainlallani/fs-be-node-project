@@ -16,16 +16,17 @@ import debug from "debug";
 // } from "../middleware/validate.js";
 
 import {
-  createCourse,
-  getCourses,
-  getCourseById,
-  updateCourse,
-  // patchCourse,
-  deleteCourse,
-} from "../controllers/course.controller.js";
+  createAuthor,
+  getAuthors,
+  getAuthorById,
+  updateAuthor,
+  // patchAuthor,
+  deleteAuthor,
+} from "../controllers/author.controller.js";
 import { validateQuery } from "../middleware/validate.middleware.js";
 import { courseQuerySchema } from "../schemas/course.schema.js";
 import { GetCoursesParams } from "../models/course.model.js";
+import { GetAuthorsParams } from "@/models/author.model.js";
 
 // import { CustomRequest } from "../index.js";
 // import { ErrorWithStatus } from "../controllers/course.js";
@@ -41,29 +42,15 @@ interface CustomError extends Error {
 // GET all courses
 router.get(
   "/",
-  validateQuery(courseQuerySchema),
+  // validateQuery(courseQuerySchema),
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const {
-        limit,
-        page,
-        sort,
-        order,
-        title,
-        instructor,
-        tags,
-        description,
-        credits,
-        minCredits,
-        maxCredits,
-        isPublished,
-        price,
-        startDate,
-        endDate,
+        name,
+        bio,
+        website,
         // } = req.query as unknown as z.infer<typeof courseQuerySchema>;
-      } = req.query as GetCoursesParams;
-
-      console.log("price: ", req.query);
+      } = req.query as GetAuthorsParams;
 
       // const courses = await getCourses(req.db!, {
       //   limit,
@@ -81,22 +68,10 @@ router.get(
       //   startDate,
       //   endDate,
       // });
-      const courses = await getCourses({
-        limit,
-        page,
-        sort,
-        order,
-        title,
-        instructor,
-        tags,
-        description,
-        credits,
-        minCredits,
-        maxCredits,
-        isPublished,
-        price,
-        startDate,
-        endDate,
+      const courses = await getAuthors({
+        name,
+        bio,
+        website,
       });
       res.status(200).json(courses);
     } catch (err) {
@@ -112,8 +87,8 @@ router.get(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       // const course = await getCourseById(req.db!, req.params.id);
-      const course = await getCourseById(req.params.id);
-      res.status(200).json(course);
+      const author = await getAuthorById(req.params.id);
+      res.status(200).json(author);
     } catch (err) {
       next(err);
     }
@@ -129,8 +104,8 @@ router.post(
       routeDebugger("POST /api/course received:", req.body);
       // const client = (req.db as any).client; // Or however you access the client
       // const course = await createCourse(client, req.db!, req.body);
-      const course = await createCourse(req.body);
-      res.status(201).json(course);
+      const author = await createAuthor(req.body);
+      res.status(201).json(author);
     } catch (err) {
       next(err);
     }
@@ -145,8 +120,8 @@ router.put(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       // const course = await updateCourse(req.db!, req.params.id, req.body);
-      const course = await updateCourse(req.params.id, req.body);
-      res.status(200).json(course);
+      const author = await updateAuthor(req.params.id, req.body);
+      res.status(200).json(author);
     } catch (err) {
       next(err);
     }
@@ -167,8 +142,8 @@ router.patch(
       // }
 
       // const course = await patchCourse(req.db!, req.params.id, req.body);
-      const course = await updateCourse(req.params.id, req.body);
-      res.status(200).json(course);
+      const author = await updateAuthor(req.params.id, req.body);
+      res.status(200).json(author);
     } catch (err) {
       next(err);
     }
@@ -182,7 +157,7 @@ router.delete(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       // const result = await deleteCourse(req.db!, req.params.id);
-      const result = await deleteCourse(req.params.id);
+      const result = await deleteAuthor(req.params.id);
       res.status(200).json(result);
     } catch (err) {
       next(err);

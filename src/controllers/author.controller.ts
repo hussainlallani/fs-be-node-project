@@ -410,54 +410,38 @@
 
 import mongoose, { SortOrder } from "mongoose";
 
-import { Course, ICourse } from "../models/course.model.js";
+import { Author, IAuthor } from "../models/author.model.js";
 
 export interface ErrorWithStatus extends Error {
   status?: number;
   details?: unknown;
 }
 
-export interface GetCoursesOptions {
+export interface GetAuthorsOptions {
   page?: number;
   limit?: number;
   sort?: string;
   order?: "asc" | "desc";
-  title?: string;
-  instructor?: string;
-  tags?: string[] | string;
-  description?: string;
-  credits?: number;
-  minCredits?: number;
-  maxCredits?: number;
-  isPublished?: boolean;
-  startDate?: Date;
-  endDate?: Date;
+  name?: string;
+  bio?: string;
+  website?: string;
 }
 
-export async function createCourse(data: Partial<ICourse>): Promise<ICourse> {
-  const course = new Course(data);
-  return await course.save();
+export async function createAuthor(data: Partial<IAuthor>): Promise<IAuthor> {
+  const author = new Author(data);
+  return await author.save();
 }
 
-export async function getCourses(options: GetCoursesOptions = {}) {
+export async function getAuthors(options: GetAuthorsOptions = {}) {
   const {
     page = 1,
     limit = 10,
     sort,
     order = "asc",
-    title,
-    instructor,
-    tags,
-    description,
-    credits,
-    minCredits,
-    maxCredits,
-    isPublished,
-    startDate,
-    endDate,
+    name,
+    bio,
+    website,
   } = options;
-
-  console.log("options: ", options);
 
   if (limit <= 0 || page <= 0) {
     throw new Error("Limit and page must be positive numbers");
@@ -468,41 +452,16 @@ export async function getCourses(options: GetCoursesOptions = {}) {
   // 🔍 Build query object dynamically
   const query: Record<string, any> = {};
 
-  if (title) query.title = { $regex: title, $options: "i" };
-  if (instructor) query.instructor = { $regex: instructor, $options: "i" };
-  if (description) query.description = { $regex: description, $options: "i" };
-  if (tags) {
-    const tagArray = Array.isArray(tags) ? tags : [tags];
-    query.tags = {
-      $all: tagArray.map((tag) => new RegExp(`^${tag}$`, "i")),
-    };
-  }
-
-  if (
-    credits !== undefined ||
-    minCredits !== undefined ||
-    maxCredits !== undefined
-  ) {
-    query.credits = {};
-    if (credits !== undefined) query.credits.$eq = credits;
-    if (minCredits !== undefined) query.credits.$gte = minCredits;
-    if (maxCredits !== undefined) query.credits.$lte = maxCredits;
-  }
-
-  if (isPublished !== undefined) query.isPublished = isPublished;
-
-  if (startDate || endDate) {
-    query.date = {};
-    if (startDate) query.date.$gte = startDate;
-    if (endDate) query.date.$lte = endDate;
-  }
+  if (name) query.name = { $regex: name, $options: "i" };
+  if (bio) query.bio = { $regex: bio, $options: "i" };
+  if (website) query.website = { $regex: website, $options: "i" };
 
   const sortOptions: Record<string, SortOrder> = {};
   if (sort) sortOptions[sort] = order === "desc" ? -1 : 1;
 
   const [data, total] = await Promise.all([
-    Course.find(query).sort(sortOptions).skip(skip).limit(limit).lean(),
-    Course.countDocuments(query),
+    Author.find(query).sort(sortOptions).skip(skip).limit(limit).lean(),
+    Author.countDocuments(query),
   ]);
 
   return {
@@ -518,23 +477,23 @@ export async function getCourses(options: GetCoursesOptions = {}) {
   };
 }
 
-export async function getCourseById(id: string): Promise<ICourse | null> {
+export async function getAuthorById(id: string): Promise<IAuthor | null> {
   if (!mongoose.Types.ObjectId.isValid(id)) throw new Error("Invalid ID");
-  return await Course.findById(id).lean();
+  return await Author.findById(id);
 }
 
-export async function updateCourse(
+export async function updateAuthor(
   id: string,
-  updates: Partial<ICourse>
-): Promise<ICourse | null> {
+  updates: Partial<IAuthor>
+): Promise<IAuthor | null> {
   if (!mongoose.Types.ObjectId.isValid(id)) throw new Error("Invalid ID");
-  return await Course.findByIdAndUpdate(id, updates, { new: true });
+  return await Author.findByIdAndUpdate(id, updates, { new: true });
 }
 
-export async function deleteCourse(
+export async function deleteAuthor(
   id: string
 ): Promise<{ deletedCount: number }> {
   if (!mongoose.Types.ObjectId.isValid(id)) throw new Error("Invalid ID");
-  const res = await Course.deleteOne({ _id: id });
+  const res = await Author.deleteOne({ _id: id });
   return { deletedCount: res.deletedCount ?? 0 };
 }

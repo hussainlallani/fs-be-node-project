@@ -53,7 +53,7 @@
 //   validationAction: "error",
 // };
 
-import mongoose, { Schema, Document } from "mongoose";
+import mongoose, { Schema, Document, SchemaTypeOptions } from "mongoose";
 
 export interface GetCoursesParams {
   page?: number;
@@ -68,6 +68,7 @@ export interface GetCoursesParams {
   minCredits?: number;
   maxCredits?: number;
   isPublished?: boolean;
+  price?: number;
   startDate?: Date;
   endDate?: Date;
 }
@@ -84,6 +85,17 @@ export interface PaginatedResponse<T> {
   };
 }
 
+const priceField: SchemaTypeOptions<number> = {
+  type: Number,
+  min: 10,
+  max: 100,
+  get: (v: number) => Math.round(v), // on GET
+  set: (v: number) => Math.round(v), //on POST
+  required: function (this: ICourse) {
+    return this.isPublished === true;
+  },
+};
+
 export interface ICourse extends Document {
   title: string;
   instructor: string;
@@ -93,18 +105,32 @@ export interface ICourse extends Document {
   credits: number;
   description?: string | null;
   isPublished?: boolean;
+  price?: number;
 }
 
 const CourseSchema = new Schema<ICourse>(
   {
     title: { type: String, required: true, trim: true, index: true },
     instructor: { type: String, required: true, trim: true, index: true },
-    author: { type: Schema.Types.ObjectId, ref: "User", required: true },
-    tags: [{ type: String, trim: true }],
+    author: { type: Schema.Types.ObjectId, ref: "Author", required: true },
+    tags: { type: [String], trim: true },
     date: { type: Date, default: Date.now },
     credits: { type: Number, required: true, min: 1 },
     description: { type: String, trim: true, default: null },
     isPublished: { type: Boolean, default: false },
+    price: {
+      type: Number,
+      min: [10, "Price must be at least 10"],
+      max: [100, "Price must be at most 100"],
+      get: (v: number) => Math.round(v),
+      set: (v: number) => Math.round(v),
+      required: [
+        function (this: ICourse) {
+          return this.isPublished;
+        },
+        "Price is required when the course is published.",
+      ] as unknown as boolean,
+    },
   },
   { timestamps: true }
 );

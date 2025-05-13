@@ -109,7 +109,8 @@ const dbDebugger = debug("app:db");
 // Replace with your env variable or fallback URI
 const mongoUri =
   process.env.MONGODB_URI ||
-  "mongodb://157.173.198.244:27017/express-app?replicaSet=rs0";
+  // "mongodb://157.173.198.244:27017/fs_be_node_project?replicaSet=rs0";
+  "mongodb://admin:admin%40123@157.173.198.244:27018/fs_be_node_project?authSource=admin";
 
 // Register Mongoose models
 // mongoose.model("Course", courseSchema);

@@ -7,6 +7,7 @@ export const courseSchema = z.object({
   credits: z.number().int().min(1).max(5, "Credits must be between 1 and 5"),
   description: z.string().optional(),
   isPublished: z.boolean().optional(),
+  price: z.number().optional(),
   date: z
     .string()
     .optional()
@@ -86,6 +87,13 @@ export const courseQuerySchema = z.object({
     .string()
     .optional()
     .transform((val) => (val ? val === "true" : undefined)),
+  price: z
+    .string()
+    .optional()
+    .transform((val) => (val ? parseInt(val) : undefined))
+    .refine((val) => val === undefined || (val >= 10 && val <= 100), {
+      message: "Credits must be between 10 and 100",
+    }),
   startDate: z
     .string()
     .optional()

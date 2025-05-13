@@ -1,35 +1,28 @@
-// // Collections Schemas
-// export const authorSchema = {
-//   validator: {
-//     $jsonSchema: {
-//       bsonType: "object",
-//       required: ["name"],
-//       properties: {
-//         name: {
-//           bsonType: "string",
-//           description: "must be a string and is required",
-//         },
-//         bio: {
-//           bsonType: "string",
-//           description: "must be a string and is required",
-//         },
-//         website: {
-//           bsonType: "objectId",
-//           description: "must be object Id",
-//         },
-//       },
-//     },
-//   },
-//   validationLevel: "strict",
-//   validationAction: "error",
-// };
-
 import { Schema, model } from "mongoose";
 
-const authorSchema = new Schema({
-  name: { type: String, required: true },
-  bio: { type: String },
-  website: { type: String },
-});
+export interface GetAuthorsParams {
+  page?: number;
+  limit?: number;
+  sort?: string;
+  order?: "asc" | "desc";
+  name?: string;
+  bio?: string;
+  website?: string;
+}
+
+export interface IAuthor extends Document {
+  name: string;
+  bio: string;
+  website: string;
+}
+
+const authorSchema = new Schema<IAuthor>(
+  {
+    name: { type: String, required: true },
+    bio: { type: String },
+    website: { type: String },
+  },
+  { timestamps: true }
+);
 
 export const Author = model("Author", authorSchema);

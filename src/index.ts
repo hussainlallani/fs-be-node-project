@@ -12,7 +12,8 @@ import {
   closeMongoDB,
 } from "./databases/mongo.database.js";
 import { router as courseRouter } from "./routes/course.route.js";
-import { ErrorWithStatus } from "./controllers/course.control.js";
+import { router as authorRouter } from "./routes/author.route.js";
+import { ErrorWithStatus } from "./controllers/course.controller.js";
 
 dotenv.config();
 
@@ -56,6 +57,7 @@ if (process.env.NODE_ENV === "development") {
 
 // Routes
 app.use("/api/course", courseRouter);
+app.use("/api/author", authorRouter);
 
 // Error handling middleware
 app.use(
