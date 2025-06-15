@@ -25,7 +25,6 @@ router.get("/:id", async (req: Request, res: Response, next: NextFunction) => {
   try {
     routeDebugger("Fetching user with ID:", req.params.id);
     const user = await getUserById(req.params.id); // Assuming getUsers can also fetch by ID
-    console.log("req.params.id: ", req.params.id);
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
@@ -40,7 +39,7 @@ router.post("/", async (req: Request, res: Response, next: NextFunction) => {
   try {
     routeDebugger("Creating new user with data:", req.body);
     // Assuming createUser is a function that creates a new user
-    const newUser = await createUser(req.body);
+    const newUser = await createUser("", req.body);
     res.status(201).json(newUser);
   } catch (error) {
     routeDebugger("Error creating user:", error);
@@ -83,8 +82,3 @@ router.delete(
 
 // Export the router to be used in the main app
 export default router;
-// This file defines the routes for user-related operations in the application.
-// It includes routes for fetching all users, fetching a user by ID, creating a new user,
-// updating a user by ID, and deleting a user by ID. Each route uses appropriate HTTP methods
-// and handles errors gracefully, returning appropriate status codes and messages.
-//   }
