@@ -5,7 +5,7 @@ import {
   getUsers,
   deleteUser,
   getUserById,
-} from "@/controllers/users.controller";
+} from "../controllers/users.controller.js"; // Adjust the import path as necessary
 
 const routeDebugger = debug("users:route");
 export const router = express.Router();
