@@ -97,7 +97,6 @@
 //     console.log("MongoDB client closed");
 //   }
 // }
-
 import mongoose from "mongoose";
 import dotenv from "dotenv";
 import debug from "debug";
@@ -114,12 +113,7 @@ mongoose.set("strictQuery", false);
 // Replace with your env variable or fallback URI
 const mongoUri =
   process.env.MONGODB_URI ||
-  // "mongodb://157.173.198.244:27017/fs_be_node_project?replicaSet=rs0";
   "mongodb://admin:admin%40123@157.173.198.244:27018/fs_be_node_project?authSource=admin";
-
-// Register Mongoose models
-// mongoose.model("Course", courseSchema);
-// mongoose.model("Author", authorSchema);
 
 // Connect using Mongoose only
 export async function initializeMongoDB(): Promise<typeof mongoose> {
