@@ -1,5 +1,5 @@
 import mongoose, { SortOrder } from "mongoose";
-import { IUser, UserModel } from "../models/users.model";
+import { IUser, UserModel } from "../models/users.model.js";
 
 /**
  * Creates a new user in the database.
