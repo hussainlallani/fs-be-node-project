@@ -122,7 +122,7 @@ const __dirname = path.dirname(__filename);
 const startupDebugger = debug("app:startup");
 const app = express();
 const PORT = process.env.PORT || 3000;
-const HOST = process.env.APP_HOST || "localhost";
+const HOST = process.env.APP_HOST || "157.173.198.244";
 console.log("Starting", HOST, " on...", PORT);
 
 // Express Setup
