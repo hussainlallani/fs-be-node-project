@@ -29,9 +29,9 @@ import {
 } from "../middleware/validate.middleware.js";
 import { courseQuerySchema } from "../schemas/course.schema.js";
 import { GetCoursesParams } from "../models/course.model.js";
-import { GetAuthorsParams } from "@/models/author.model.js";
+import { GetAuthorsParams } from "../models/author.model.js";
 import { authorSchema } from "../schemas/author.schema.js";
-import { partialAuthorSchema } from "@/schemas/author.schema.js";
+import { partialAuthorSchema } from "../schemas/author.schema.js";
 
 // import { CustomRequest } from "../index.js";
 // import { ErrorWithStatus } from "../controllers/course.js";

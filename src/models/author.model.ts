@@ -1,5 +1,5 @@
-import { validateBody } from "@/middleware/validate.middleware";
-import mongoose, { Schema, model } from "mongoose";
+// import { validateBody } from "@/middleware/validate.middleware";
+import { Schema, model } from "mongoose";
 
 /**
  * Interface for the parameters used to get authors.

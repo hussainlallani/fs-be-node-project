@@ -1,12 +1,12 @@
 import mongoose, { SortOrder } from "mongoose";
-import { IUser, UserModel } from "@/models/users.model";
+import { IUser, UserModel } from "../models/users.model";
 
 /**
  * Creates a new user in the database.
  * @param data - The user data to be created.
  * @returns A promise that resolves to the created user.
  */
-export async function createUser(data: IUser): Promise<IUser> {
+export async function createUser(id: string, data: IUser): Promise<IUser> {
   const user = new UserModel(data);
   return await user.save();
 }
@@ -15,7 +15,7 @@ export async function createUser(data: IUser): Promise<IUser> {
  * Fetch all users from the database.
  * @returns A promise that resolves to an array of users.
  */
-export async function getUsers(): Promise<IUser[]> {
+export async function getUsers(id?: string): Promise<IUser[]> {
   return UserModel.find().select("-password").exec(); // Never expose password
 }
 
