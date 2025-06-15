@@ -152,7 +152,7 @@ app.use(
   }
 );
 
-app.set("trust proxy", true); // Enable trust proxy for reverse proxies (like Nginx)
+// app.set("trust proxy", true); // Enable trust proxy for reverse proxies (like Nginx)
 
 // Start server with HTTPS
 async function startServer() {
