@@ -418,21 +418,21 @@ export interface ErrorWithStatus extends Error {
 }
 
 export interface GetCoursesOptions {
-  page?: number;
-  limit?: number;
-  sort?: string;
-  order?: "asc" | "desc";
-  title?: string;
-  instructor?: string;
-  tags?: string[] | string;
-  description?: string;
-  credits?: number;
-  minCredits?: number;
-  maxCredits?: number;
-  isPublished?: boolean;
-  price?: number;
-  startDate?: Date;
-  endDate?: Date;
+  page: number;
+  limit: number;
+  sort: string;
+  order: "asc" | "desc";
+  title: string;
+  instructor: string;
+  tags: string[] | string;
+  description: string;
+  credits: number;
+  minCredits: number;
+  maxCredits: number;
+  isPublished: boolean;
+  price: number;
+  startDate: Date;
+  endDate: Date;
 }
 
 export async function createCourse(data: Partial<ICourse>): Promise<ICourse> {
@@ -440,7 +440,7 @@ export async function createCourse(data: Partial<ICourse>): Promise<ICourse> {
   return await course.save();
 }
 
-export async function getCourses(options: GetCoursesOptions = {}) {
+export async function getCourses(options: Partial<GetCoursesOptions> = {}) {
   const {
     page = 1,
     limit = 10,

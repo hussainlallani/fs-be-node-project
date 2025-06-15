@@ -106,6 +106,11 @@ dotenv.config();
 
 const dbDebugger = debug("app:db");
 
+// Set `strictQuery: false` to globally opt into filtering by properties that aren't in the schema
+// Included because it removes preparatory warnings for Mongoose 7.
+// See: https://mongoosejs.com/docs/migrating_to_6.html#strictquery-is-removed-and-replaced-by-strict
+mongoose.set("strictQuery", false);
+
 // Replace with your env variable or fallback URI
 const mongoUri =
   process.env.MONGODB_URI ||

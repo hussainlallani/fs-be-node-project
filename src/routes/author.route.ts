@@ -23,10 +23,15 @@ import {
   // patchAuthor,
   deleteAuthor,
 } from "../controllers/author.controller.js";
-import { validateQuery } from "../middleware/validate.middleware.js";
+import {
+  validateBody,
+  validateQuery,
+} from "../middleware/validate.middleware.js";
 import { courseQuerySchema } from "../schemas/course.schema.js";
 import { GetCoursesParams } from "../models/course.model.js";
 import { GetAuthorsParams } from "@/models/author.model.js";
+import { authorSchema } from "../schemas/author.schema.js";
+import { partialAuthorSchema } from "@/schemas/author.schema.js";
 
 // import { CustomRequest } from "../index.js";
 // import { ErrorWithStatus } from "../controllers/course.js";
@@ -50,7 +55,7 @@ router.get(
         bio,
         website,
         // } = req.query as unknown as z.infer<typeof courseQuerySchema>;
-      } = req.query as GetAuthorsParams;
+      } = req.query as Partial<GetAuthorsParams>;
 
       // const courses = await getCourses(req.db!, {
       //   limit,
@@ -98,7 +103,7 @@ router.get(
 // POST new course
 router.post(
   "/",
-  // validateBody(courseSchema),
+  validateBody(partialAuthorSchema), // Assuming you have an authorSchema for validation
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       routeDebugger("POST /api/course received:", req.body);

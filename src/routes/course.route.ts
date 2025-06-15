@@ -26,6 +26,7 @@ import {
 import { validateQuery } from "../middleware/validate.middleware.js";
 import { courseQuerySchema } from "../schemas/course.schema.js";
 import { GetCoursesParams } from "../models/course.model.js";
+import mongoose from "mongoose";
 
 // import { CustomRequest } from "../index.js";
 // import { ErrorWithStatus } from "../controllers/course.js";
@@ -120,19 +121,30 @@ router.get(
   }
 );
 
-// POST new course
 router.post(
   "/",
   // validateBody(courseSchema),
   async (req: Request, res: Response, next: NextFunction) => {
+    routeDebugger("POST /course received:", req.body);
+    const session = await mongoose.startSession();
+    session.startTransaction();
     try {
-      routeDebugger("POST /api/course received:", req.body);
-      // const client = (req.db as any).client; // Or however you access the client
-      // const course = await createCourse(client, req.db!, req.body);
+      // Pass the session to your createCourse function if it supports it
       const course = await createCourse(req.body);
+      await session.commitTransaction();
       res.status(201).json(course);
-    } catch (err) {
+    } catch (error) {
+      await session.abortTransaction();
+      for (const key in error as any) {
+        console.log("Error key:", key);
+        console.log("ERRRR ", (error as any)[key]);
+      }
+      const err: CustomError = new Error("Failed to create course");
+      err.status = 500;
+      err.details = error;
       next(err);
+    } finally {
+      session.endSession();
     }
   }
 );
@@ -153,39 +165,43 @@ router.put(
   }
 );
 
-// PATCH update course
-router.patch(
+router.put(
   "/:id",
   // validateParams(idSchema),
-  // validateBody(partialCourseSchema),
+  // validateBody(courseSchema),
   async (req: Request, res: Response, next: NextFunction) => {
+    const session = await mongoose.startSession();
+    session.startTransaction();
     try {
-      // if (Object.keys(req.body).length === 0) {
-      //   const err: ErrorWithStatus = new Error("No fields provided for update");
-      //   err.status = 400;
-      //   throw err;
-      // }
-
-      // const course = await patchCourse(req.db!, req.params.id, req.body);
+      // Pass the session to your updateCourse function if it supports it
       const course = await updateCourse(req.params.id, req.body);
+      await session.commitTransaction();
       res.status(200).json(course);
     } catch (err) {
+      await session.abortTransaction();
       next(err);
+    } finally {
+      session.endSession();
     }
   }
 );
 
-// DELETE a course
 router.delete(
   "/:id",
   // validateParams(idSchema),
   async (req: Request, res: Response, next: NextFunction) => {
+    const session = await mongoose.startSession();
+    session.startTransaction();
     try {
-      // const result = await deleteCourse(req.db!, req.params.id);
+      // Pass the session to your deleteCourse function if it supports it
       const result = await deleteCourse(req.params.id);
+      await session.commitTransaction();
       res.status(200).json(result);
     } catch (err) {
+      await session.abortTransaction();
       next(err);
+    } finally {
+      session.endSession();
     }
   }
 );

@@ -106,6 +106,7 @@ export interface ICourse extends Document {
   description?: string | null;
   isPublished?: boolean;
   price?: number;
+  genre: string;
 }
 
 const CourseSchema = new Schema<ICourse>(
@@ -113,7 +114,26 @@ const CourseSchema = new Schema<ICourse>(
     title: { type: String, required: true, trim: true, index: true },
     instructor: { type: String, required: true, trim: true, index: true },
     author: { type: Schema.Types.ObjectId, ref: "Author", required: true },
-    tags: { type: [String], trim: true },
+    // tags: { type: [String], trim: true },
+    tags: {
+      type: [String],
+      validate: {
+        validator: function (v: string[]) {
+          return Array.isArray(v) && v.length > 0;
+        },
+        message: "At least one tag is required.",
+      },
+      // For API or Server-side validation we can use a async custom validator
+      // validate: {
+      //   validator: async function (v: string[]) {
+      //     // Simulate async validation
+      //     await new Promise((resolve) => setTimeout(resolve, 10000));
+      //     return Array.isArray(v) && v.length > 0;
+      //   },
+      //   message: "At least one tag is required.",
+      // },
+      trim: true,
+    },
     date: { type: Date, default: Date.now },
     credits: { type: Number, required: true, min: 1 },
     description: { type: String, trim: true, default: null },
@@ -131,9 +151,16 @@ const CourseSchema = new Schema<ICourse>(
         "Price is required when the course is published.",
       ] as unknown as boolean,
     },
+    genre: [{ type: Schema.Types.ObjectId, ref: "Genre" }],
   },
   { timestamps: true }
 );
+
+// Virtual for book's URL
+CourseSchema.virtual("url").get(function () {
+  // We don't use an arrow function as we'll need the this object
+  return `/api/course/${this._id}`;
+});
 
 CourseSchema.set("toJSON", {
   virtuals: true,
