@@ -121,10 +121,9 @@ const __dirname = path.dirname(__filename);
 
 const startupDebugger = debug("app:startup");
 const app = express();
-const PORT = process.env.PORT || 3000;
-const HOST = process.env.APP_HOST;
-
-console.log("Host: ", HOST);
+const PORT = Number(process.env.PORT) || 3000;
+const HOST = process.env.APP_HOST || "localhost";
+console.log("Starting", HOST, " on...", PORT);
 
 // Express Setup
 app.use(helmet());
@@ -171,7 +170,7 @@ async function startServer() {
 
     const server = https.createServer(options, app);
 
-    server.listen(PORT, () => {
+    server.listen(PORT, HOST, () => {
       console.log(`HTTPS server running on https://${HOST}:${PORT}`);
     });
   } catch (err) {
