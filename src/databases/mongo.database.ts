@@ -100,6 +100,7 @@
 import mongoose from "mongoose";
 import dotenv from "dotenv";
 import debug from "debug";
+import { MongoClientOptions } from "mongodb";
 
 dotenv.config();
 
@@ -115,17 +116,19 @@ const mongoUri =
   process.env.MONGODB_URI ||
   "mongodb://admin:admin%40123@127.0.0.1:27018/fs_be_node_project?authSource=admin";
 
+const options: Partial<MongoClientOptions> = {
+  maxPoolSize: 10,
+  minPoolSize: 2,
+  maxIdleTimeMS: 300000,
+  connectTimeoutMS: 10000,
+  socketTimeoutMS: 30000,
+};
+
 // Connect using Mongoose only
 export async function initializeMongoDB(): Promise<typeof mongoose> {
   try {
     dbDebugger("Connecting to MongoDB via Mongoose at", mongoUri);
-    await mongoose.connect(mongoUri, {
-      maxPoolSize: 10,
-      minPoolSize: 2,
-      maxIdleTimeMS: 300000,
-      connectTimeoutMS: 10000,
-      socketTimeoutMS: 30000,
-    });
+    await mongoose.connect(mongoUri, options);
     dbDebugger("Mongoose connected to MongoDB");
     return mongoose;
   } catch (err) {
