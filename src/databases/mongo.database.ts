@@ -114,7 +114,7 @@ mongoose.set("strictQuery", false);
 // Replace with your env variable or fallback URI
 const mongoUri =
   process.env.MONGODB_URI ||
-  "mongodb://admin:admin%40123@127.0.0.1:27018/fs_be_node_project?authSource=admin";
+  "mongodb://admin:admin%40123@157.173.198.244:27018/fs_be_node_project?authSource=admin";
 
 const options: Partial<MongoClientOptions> = {
   maxPoolSize: 10,
