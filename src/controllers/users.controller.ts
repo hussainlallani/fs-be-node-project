@@ -16,7 +16,7 @@ export async function createUser(id: string, data: IUser): Promise<IUser> {
  * @returns A promise that resolves to an array of users.
  */
 export async function getUsers(id?: string): Promise<IUser[]> {
-  return UserModel.find().select("-password").exec(); // Never expose password
+  return UserModel.find().select("-password, -__v").exec(); // Never expose password
 }
 
 /**
@@ -84,13 +84,28 @@ export async function deleteUser(id: string): Promise<IUser | null> {
 }
 
 /**
- * Delete all users.
+ * Delete multiple users by an array of IDs.
+ * @param ids - Array of user IDs to delete.
+ * @returns The result of the delete operation.
  */
-export async function deleteAllUsers(): Promise<void> {
-  const result = await UserModel.deleteMany({}).exec();
-  if (result.deletedCount === 0) {
-    throw new Error("No users found to delete");
+export async function deleteUsersByIds(
+  ids: string[]
+): Promise<{ deletedCount: number }> {
+  if (!Array.isArray(ids) || ids.length === 0) {
+    throw new Error("No IDs provided");
   }
+
+  // Validate all IDs
+  const invalidIds = ids.filter((id) => !mongoose.Types.ObjectId.isValid(id));
+  if (invalidIds.length > 0) {
+    throw new Error(`Invalid user IDs: ${invalidIds.join(", ")}`);
+  }
+
+  const result = await UserModel.deleteMany({ _id: { $in: ids } }).exec();
+  if (result.deletedCount === 0) {
+    throw new Error("No users found to delete for provided IDs");
+  }
+  return { deletedCount: result.deletedCount ?? 0 };
 }
 
 /**

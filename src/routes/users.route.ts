@@ -5,80 +5,141 @@ import {
   getUsers,
   deleteUser,
   getUserById,
-} from "../controllers/users.controller.js"; // Adjust the import path as necessary
+  updateUser,
+  deleteUsersByIds,
+} from "../controllers/users.controller.js";
+import { MESSAGES } from "../config/messages.js";
+import { getErrorMessage } from "../utils/error.util.js";
 
 const routeDebugger = debug("users:route");
 export const router = express.Router();
 
-router.get("/", async (req, res) => {
-  try {
-    routeDebugger("Fetching all users");
-    const users = await getUsers(); // Assuming getUsers is a function that fetches users
-    res.status(200).json(users);
-  } catch (error) {
-    routeDebugger("Error fetching users:", error);
-    res.status(500).json({ message: "Error fetching users", error });
-  }
-});
-
-router.get("/:id", async (req: Request, res: Response, next: NextFunction) => {
-  try {
-    routeDebugger("Fetching user with ID:", req.params.id);
-    const user = await getUserById(req.params.id); // Assuming getUsers can also fetch by ID
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
-    }
-    res.status(200).json(user);
-  } catch (error) {
-    routeDebugger("Error fetching user:", error);
-    res.status(500).json({ message: "Error fetching user", error });
-  }
-});
-
-router.post("/", async (req: Request, res: Response, next: NextFunction) => {
-  try {
-    routeDebugger("Creating new user with data:", req.body);
-    // Assuming createUser is a function that creates a new user
-    const newUser = await createUser("", req.body);
-    res.status(201).json(newUser);
-  } catch (error) {
-    routeDebugger("Error creating user:", error);
-    res.status(500).json({ message: "Error creating user", error });
-  }
-});
-
-router.put("/:id", async (req: Request, res: Response, next: NextFunction) => {
-  try {
-    routeDebugger("Updating user with ID:", req.params.id);
-    // Assuming updateUser is a function that updates a user by ID
-    const updatedUser = await createUser(req.params.id, req.body);
-    if (!updatedUser) {
-      return res.status(404).json({ message: "User not found" });
-    }
-    res.status(200).json(updatedUser);
-  } catch (error) {
-    routeDebugger("Error updating user:", error);
-    res.status(500).json({ message: "Error updating user", error });
-  }
-});
-
-router.delete(
-  "/:id",
-  async (req: Request, res: Response, next: NextFunction) => {
+router.get(
+  "/",
+  async (_req: Request, res: Response, _next: NextFunction): Promise<void> => {
     try {
-      routeDebugger("Deleting user with ID:", req.params.id);
-      // Assuming deleteUser is a function that deletes a user by ID
-      const deletedUser = await deleteUser(req.params.id);
-      if (!deletedUser) {
-        return res.status(404).json({ message: "User not found" });
-      }
-      res.status(200).json({ message: "User deleted successfully" });
+      routeDebugger("Fetching all users");
+      const users = await getUsers();
+      res.status(200).json(users);
     } catch (error) {
-      routeDebugger("Error deleting user:", error);
-      res.status(500).json({ message: "Error deleting user", error });
+      routeDebugger("Error:", error);
+      res
+        .status(500)
+        .json({ message: MESSAGES.ERROR_FETCH, error: getErrorMessage(error) });
     }
   }
 );
 
-// Export the router to be used in the main app
+router.get("/:id", async (req: Request, res: Response, _next: NextFunction) => {
+  try {
+    routeDebugger("Fetching user with ID:", req.params.id);
+    const user = await getUserById(req.params.id);
+    if (!user) {
+      return res.status(404).json({ message: MESSAGES.NOT_FOUND });
+    }
+    res.status(200).json(user);
+  } catch (error) {
+    routeDebugger("Error:", error);
+    res
+      .status(500)
+      .json({ message: MESSAGES.ERROR_FETCH, error: getErrorMessage(error) });
+  }
+});
+
+router.post(
+  "/bulk",
+  async (req: Request, res: Response, _next: NextFunction) => {
+    try {
+      routeDebugger("Creating multiple users");
+      if (!Array.isArray(req.body)) {
+        return res.status(400).json({ message: MESSAGES.INVALID_BODY });
+      }
+      const newUsers = await Promise.all(
+        req.body.map((userData: any) => createUser("", userData))
+      );
+      res.status(201).json(newUsers);
+    } catch (error) {
+      routeDebugger("Error:", error);
+      res.status(500).json({
+        message: MESSAGES.ERROR_BULK_CREATE,
+        error: getErrorMessage(error),
+      });
+    }
+  }
+);
+
+router.post("/", async (req: Request, res: Response, _next: NextFunction) => {
+  try {
+    routeDebugger("Creating new user");
+    const newUser = await createUser("", req.body);
+    res.status(201).json(newUser);
+  } catch (error) {
+    routeDebugger("Error:", error);
+    res
+      .status(500)
+      .json({ message: MESSAGES.ERROR_CREATE, error: getErrorMessage(error) });
+  }
+});
+
+router.put("/:id", async (req: Request, res: Response, _next: NextFunction) => {
+  try {
+    routeDebugger("Updating user with ID:", req.params.id);
+    const updatedUser = await updateUser(req.params.id, req.body);
+    if (!updatedUser) {
+      return res.status(404).json({ message: MESSAGES.NOT_FOUND });
+    }
+    res.status(200).json(updatedUser);
+  } catch (error) {
+    routeDebugger("Error:", error);
+    res
+      .status(500)
+      .json({ message: MESSAGES.ERROR_UPDATE, error: getErrorMessage(error) });
+  }
+});
+
+router.delete(
+  "/bulk",
+  async (req: Request, res: Response, _next: NextFunction) => {
+    try {
+      routeDebugger("Bulk deleting users");
+      const { ids } = req.body;
+      if (!Array.isArray(ids) || ids.length === 0) {
+        return res.status(400).json({ message: MESSAGES.NO_IDS_PROVIDED });
+      }
+
+      const result = await deleteUsersByIds(ids);
+      res.status(200).json({
+        message: "Users deleted successfully",
+        deletedCount: result.deletedCount,
+      });
+    } catch (error) {
+      routeDebugger("Error:", error);
+      res.status(500).json({
+        message: MESSAGES.ERROR_BULK_DELETE,
+        error: getErrorMessage(error),
+      });
+    }
+  }
+);
+
+router.delete(
+  "/:id",
+  async (req: Request, res: Response, _next: NextFunction) => {
+    try {
+      routeDebugger("Deleting user with ID:", req.params.id);
+      const deletedUser = await deleteUser(req.params.id);
+      if (!deletedUser) {
+        return res.status(404).json({ message: MESSAGES.NOT_FOUND });
+      }
+      res.status(200).json({ message: "User deleted successfully" });
+    } catch (error) {
+      routeDebugger("Error:", error);
+      res.status(500).json({
+        message: MESSAGES.ERROR_DELETE,
+        error: getErrorMessage(error),
+      });
+    }
+  }
+);
+
 export default router;

@@ -233,7 +233,7 @@ if (NODE_ENV === "development") {
 }
 
 // Routes
-app.use("/api/users", usersRouter);
+app.use("/api/user", usersRouter);
 app.use("/api/course", courseRouter);
 app.use("/api/author", authorRouter);
 
