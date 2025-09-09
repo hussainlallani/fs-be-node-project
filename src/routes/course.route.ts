@@ -23,7 +23,7 @@ import {
   // patchCourse,
   deleteCourse,
 } from "../controllers/course.controller.js";
-import { validateQuery } from "../middleware/validate.middleware.js";
+import { validateQuery } from "../middlewares/validate.middleware.js";
 import { courseQuerySchema } from "../schemas/course.schema.js";
 import { GetCoursesParams } from "../models/course.model.js";
 import mongoose from "mongoose";
@@ -63,8 +63,6 @@ router.get(
         endDate,
         // } = req.query as unknown as z.infer<typeof courseQuerySchema>;
       } = req.query as GetCoursesParams;
-
-      console.log("price: ", req.query);
 
       // const courses = await getCourses(req.db!, {
       //   limit,

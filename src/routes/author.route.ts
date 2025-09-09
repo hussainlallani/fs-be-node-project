@@ -26,7 +26,7 @@ import {
 import {
   validateBody,
   validateQuery,
-} from "../middleware/validate.middleware.js";
+} from "../middlewares/validate.middleware.js";
 import { courseQuerySchema } from "../schemas/course.schema.js";
 import { GetCoursesParams } from "../models/course.model.js";
 import { GetAuthorsParams } from "../models/author.model.js";

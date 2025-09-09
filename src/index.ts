@@ -203,7 +203,8 @@ import path from "path";
 import { fileURLToPath } from "url";
 
 import { initializeMongoDB, closeMongoDB } from "./databases/mongo.database.js";
-import { router as usersRouter } from "./routes/users.route.js";
+import { router as authRouter } from "./routes/auth.route.js";
+import { router as userRouter } from "./routes/user.route.js";
 import { router as courseRouter } from "./routes/course.route.js";
 import { router as authorRouter } from "./routes/author.route.js";
 import { ErrorWithStatus } from "./controllers/course.controller.js";
@@ -233,7 +234,8 @@ if (NODE_ENV === "development") {
 }
 
 // Routes
-app.use("/api/user", usersRouter);
+app.use("/api/auth", authRouter);
+app.use("/api/user", userRouter);
 app.use("/api/course", courseRouter);
 app.use("/api/author", authorRouter);
 

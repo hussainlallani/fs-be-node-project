@@ -10,6 +10,8 @@ import {
 } from "../controllers/users.controller.js";
 import { MESSAGES } from "../config/messages.js";
 import { getErrorMessage } from "../utils/error.util.js";
+import { validateBody } from "@/middlewares/validate.middleware.js";
+import { userSchema } from "@/schemas/user.schema.js";
 
 const routeDebugger = debug("users:route");
 export const router = express.Router();
@@ -68,18 +70,23 @@ router.post(
   }
 );
 
-router.post("/", async (req: Request, res: Response, _next: NextFunction) => {
-  try {
-    routeDebugger("Creating new user");
-    const newUser = await createUser("", req.body);
-    res.status(201).json(newUser);
-  } catch (error) {
-    routeDebugger("Error:", error);
-    res
-      .status(500)
-      .json({ message: MESSAGES.ERROR_CREATE, error: getErrorMessage(error) });
+router.post(
+  "/",
+  validateBody(userSchema),
+  async (req: Request, res: Response, _next: NextFunction) => {
+    try {
+      routeDebugger("Creating new user");
+      const newUser = await createUser("", req.body);
+      res.status(201).json(newUser);
+    } catch (error) {
+      routeDebugger("Error:", error);
+      res.status(500).json({
+        error: getErrorMessage(error),
+        message: MESSAGES.ERROR_CREATE,
+      });
+    }
   }
-});
+);
 
 router.put("/:id", async (req: Request, res: Response, _next: NextFunction) => {
   try {
