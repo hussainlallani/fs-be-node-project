@@ -23,9 +23,9 @@ jobs:
           source: "."
           target: "/var/www/fs-be-node-project"
           overwrite: true
-          strip_components: 1
+          strip_components: 1 # Prevents creating an extra directory level
 
-      - name: Setup & Run Node.js + Next.js Apps
+      - name: Setup & Run Node.js App
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.SSH_HOST }}
@@ -34,6 +34,8 @@ jobs:
           port: 22
           script: |
             echo "🔧 Starting deploy on $(hostname)"
+
+            # Navigate to project directory
             cd /var/www/fs-be-node-project || {
               echo "❌ Failed to find project directory!"
               exit 1
@@ -42,53 +44,68 @@ jobs:
             echo "📁 Project directory contents:"
             ls -la
 
-            # Node.js Setup
+            # Install Node.js (if needed)
             if ! command -v node &> /dev/null; then
               echo "📥 Installing Node.js..."
               curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
               sudo apt-get install -y nodejs
+            else
+              echo "✅ Node.js $(node -v) already installed"
             fi
 
-            # PM2 Setup
+            # Install PM2 globally (if needed)
             if ! command -v pm2 &> /dev/null; then
               echo "📥 Installing PM2..."
               npm install -g pm2
+            else
+              echo "✅ PM2 $(pm2 -v) already installed"
             fi
 
-            # Backend Setup
-            echo "🧹 Cleaning backend build..."
-            npm run clean || true
-            echo "📦 Installing backend dependencies..."
+            # Clean previous builds
+            echo "🧹 Cleaning previous build..."
+            npm run clean
+
+            # Install dependencies
+            echo "📦 Installing dependencies..."
             npm ci --production
-            echo "🏗️ Building backend..."
+
+            if ! command -v tsc &> /dev/null; then
+              echo "📥 TypeScript compiler not found, installing..."
+              npm install -g typescript
+            else
+              echo "✅ TypeScript compiler already installed: $(tsc -v)"
+            fi
+
+            # Run build
+            echo "🏗️ Building application..."
             npm run build
 
-            # MongoDB
+            # Stop MongoDB with the correct config
+            echo "🛠️ Stopping MongoDB with custom config..."
             pm2 delete mongo_fs_be_node_project 2>/dev/null || true
+
+            # Start MongoDB with the correct config
+            echo "🛠️ Starting MongoDB with custom config..."
             pm2 start "mongod --config /etc/mongod.conf" --name "mongo_fs_be_node_project"
 
-            # Node.js App
+            # Stop existing Node.js application (fs-be-node-app) if running
+            echo "🛑 Stopping existing Node.js application..."
             pm2 delete fs-be-node-app 2>/dev/null || true
-            pm2 start dist/index.js --name "fs-be-node-app"
 
-            # GameHub Next.js Setup
-            echo "🚀 Deploying GameHub Next.js app..."
-            cd gamehub || {
-              echo "❌ GameHub directory not found!"
+            # Start the Node.js application with PM2
+            echo "🚀 Starting application with PM2..."
+            pm2 start dist/index.js --name "fs-be-node-app" || {
+              echo "❌ Failed to start application"
               exit 1
             }
 
-            echo "📦 Installing GameHub dependencies..."
-            npm install
-
-            echo "🏗️ Building GameHub..."
-            npm run build
-
-            pm2 delete gamehub-next-app 2>/dev/null || true
-            pm2 start "npm run start" --name "gamehub-next-app" --cwd /var/www/fs-be-node-project/gamehub
-
-            # Save PM2 state
+            # Save PM2 process list
+            echo "💾 Saving PM2 process list..."
             pm2 save
+
+            # Configure PM2 startup
+            echo "🔁 Setting up PM2 startup..."
             pm2 startup systemd -u root --hp /root
+            pm2 save
 
             echo "🎉 Deployment completed successfully!"
