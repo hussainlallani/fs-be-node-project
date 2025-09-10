@@ -10,8 +10,8 @@ import {
 } from "../controllers/users.controller.js";
 import { MESSAGES } from "../config/messages.js";
 import { getErrorMessage } from "../utils/error.util.js";
-import { validateBody } from "@/middlewares/validate.middleware.js";
-import { userSchema } from "@/schemas/user.schema.js";
+import { validateBody } from "../middlewares/validate.middleware.js";
+import { userSchema } from "../schemas/user.schema.js";
 
 const routeDebugger = debug("users:route");
 export const router = express.Router();
