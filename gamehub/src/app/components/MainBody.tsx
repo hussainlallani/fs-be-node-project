@@ -2,8 +2,18 @@
 import axios from "axios";
 import React, { useEffect } from "react";
 
+interface Game {
+  id: number;
+  name: string;
+  artwork: string;
+  genres: string[];
+  platforms: string[];
+  total_rating: number;
+  release_date: number;
+}
+
 const MainBody = () => {
-  const [gridData, setGridData] = React.useState<any[]>([]);
+  const [gridData, setGridData] = React.useState<Game[]>([]);
 
   useEffect(() => {
     // Placeholder for future data fetching logic
