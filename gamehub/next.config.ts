@@ -9,6 +9,15 @@ const nextConfig: NextConfig = {
   env: {
     basePath: "/gamehub",
   },
+  images: {
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "flowbite.s3.amazonaws.com",
+        pathname: "**",
+      },
+    ],
+  },
 };
 
 export default nextConfig;
