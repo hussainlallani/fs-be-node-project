@@ -81,7 +81,15 @@ jobs:
             npm install
 
             echo "🏗️ Building GameHub..."
-            npm run build
+            npm run build || {
+            echo "❌ GameHub build failed!"
+            exit 1
+            }
+
+            echo "📁 Checking GameHub build output:"
+            ls -la .next || echo "⚠️ .next folder not found!"
+
+            # Start Next.js app with PM2
 
             pm2 delete gamehub-next-app 2>/dev/null || true
             pm2 start "npm run start" --name "gamehub-next-app" --cwd /var/www/fs-be-node-project/gamehub
