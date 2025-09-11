@@ -208,6 +208,8 @@ import { router as userRouter } from "./routes/user.route.js";
 import { router as courseRouter } from "./routes/course.route.js";
 import { router as authorRouter } from "./routes/author.route.js";
 import { router as gamesRouter } from "./routes/games.route.js";
+import { router as artworksRouter } from "./routes/artworks.route.js";
+import { router as gridRouter } from "./routes/grid.route.js";
 import { ErrorWithStatus } from "./controllers/course.controller.js";
 
 dotenv.config();
@@ -241,6 +243,8 @@ app.use("/api/course", courseRouter);
 app.use("/api/author", authorRouter);
 
 app.use("/api/games", gamesRouter);
+app.use("/api/artworks", artworksRouter);
+app.use("/api/grid", gridRouter);
 
 // Error handling middleware
 app.use(
