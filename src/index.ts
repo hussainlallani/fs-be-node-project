@@ -201,6 +201,7 @@ import debug from "debug";
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
+import cors from "cors";
 
 import { initializeMongoDB, closeMongoDB } from "./databases/mongo.database.js";
 import { router as authRouter } from "./routes/auth.route.js";
@@ -227,6 +228,8 @@ const app = express();
 console.log(`Starting server at http://${HOST}:${PORT} [${NODE_ENV}]`);
 
 // Middleware
+app.use(cors()); // Enable CORS for all routes
+app.options("*", cors()); // Handles preflight for all routes
 app.use(helmet());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));

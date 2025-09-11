@@ -86,7 +86,7 @@ router.get("/", async (req: Request, res: Response) => {
   const query = `
     fields id, name, genres, platforms, total_rating, total_rating_count, first_release_date, artworks;
     sort total_rating desc;
-    limit 10;
+    limit 30;
   `;
 
   try {
