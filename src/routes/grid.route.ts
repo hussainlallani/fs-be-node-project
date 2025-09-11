@@ -12,7 +12,7 @@ if (!CLIENT_ID || !ACCESS_TOKEN) {
   throw new Error("Missing IGDB credentials in environment variables");
 }
 
-const getImageUrl = (imageId: string, size = "t_screenshot_huge") =>
+const getImageUrl = (imageId: string, size = "t_cover_big") =>
   `https://images.igdb.com/igdb/image/upload/${size}/${imageId}.jpg`;
 
 // router.get("/", async (req: Request, res: Response) => {
