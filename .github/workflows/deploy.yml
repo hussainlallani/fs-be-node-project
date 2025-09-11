@@ -8,10 +8,6 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    environment: production
-    env:
-      IGDB_CLIENT_ID: ${{ vars.IGDB_CLIENT_ID }}
-      IGDB_ACCESS_TOKEN: ${{ vars.IGDB_ACCESS_TOKEN }}
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v4
