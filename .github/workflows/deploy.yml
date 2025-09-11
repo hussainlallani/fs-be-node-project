@@ -8,7 +8,10 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-
+    environment: production
+    env:
+      IGDB_CLIENT_ID: ${{ vars.IGDB_CLIENT_ID }}
+      IGDB_ACCESS_TOKEN: ${{ vars.IGDB_ACCESS_TOKEN }}
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v4
@@ -32,19 +35,12 @@ jobs:
           username: root
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: 22
-          envs: IGDB_CLIENT_ID,IGDB_ACCESS_TOKEN
           script: |
             echo "🔧 Starting deploy on $(hostname)"
             cd /var/www/fs-be-node-project || {
-            echo "❌ Failed to find project directory!"
-            exit 1
+              echo "❌ Failed to find project directory!"
+              exit 1
             }
-
-            echo "🌱 Writing .env file..."
-cat <<EOF > .env
-IGDB_CLIENT_ID=$IGDB_CLIENT_ID
-IGDB_ACCESS_TOKEN=$IGDB_ACCESS_TOKEN
-EOF
 
             echo "📁 Project directory contents:"
             ls -la
