@@ -9,7 +9,7 @@ const CLIENT_ID = process.env.IGDB_CLIENT_ID || "";
 const ACCESS_TOKEN = process.env.IGDB_ACCESS_TOKEN || "";
 
 if (!CLIENT_ID || !ACCESS_TOKEN) {
-  throw new Error("Missing IGDB credentials in environment variables");
+  throw new Error("Missing IGDB credentials in environment variables.");
 }
 
 const getImageUrl = (imageId: string, size = "t_cover_big") =>
