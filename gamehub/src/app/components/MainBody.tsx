@@ -1,5 +1,5 @@
+/* eslint-disable @next/next/no-img-element */
 import axios from "axios";
-import { set } from "mongoose";
 import React, { useEffect } from "react";
 
 const MainBody = () => {
