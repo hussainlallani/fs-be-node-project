@@ -17,13 +17,6 @@ export interface GameQuery {
 }
 
 const SideBar = ({ selectedGenre, onSelectGenre }: Props) => {
-  const [gameQuery, setGameQuery] = useState<GameQuery>({
-    genre: null,
-    platform: null,
-    sortOrder: "",
-    searchText: "",
-  });
-
   return (
     <aside
       className="fixed top-0 left-0 z-40 w-64 h-screen pt-14 transition-transform -translate-x-full bg-white border-r border-gray-200 md:translate-x-0 dark:bg-gray-800 dark:border-gray-700"
@@ -32,10 +25,8 @@ const SideBar = ({ selectedGenre, onSelectGenre }: Props) => {
     >
       <div className="flex items-center justify-center p-4">
         <GenreList
-          selectedGenre={gameQuery.genre}
-          onSelectGenre={(genre) =>
-            setGameQuery((prev) => ({ ...prev, genre }))
-          }
+          selectedGenre={selectedGenre}
+          onSelectGenre={onSelectGenre}
         />
       </div>
     </aside>
