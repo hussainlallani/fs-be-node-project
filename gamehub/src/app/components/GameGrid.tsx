@@ -3,6 +3,7 @@ import React from "react";
 import useGamesGrid from "../hooks/useGameGrid";
 import ImageSkeletonContainer from "./ImageSkeletonContainer";
 import { GameQuery } from "../page";
+import GameHeading from "./GameHeading";
 
 interface Props {
   gameQuery: GameQuery;
@@ -12,13 +13,9 @@ const GameGrid = ({ gameQuery }: Props) => {
   const { data: gridData, isLoading, error } = useGamesGrid();
   const skeletons = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
 
-  const selectedGenre = gameQuery.genre;
-
   return (
     <main className="p-4 md:ml-64 h-auto pt-20">
-      <h1 className="text-3xl font-bold mb-4 text-gray-900 dark:text-white">
-        {selectedGenre && selectedGenre.name ? selectedGenre.name : "All Games"}
-      </h1>
+      <GameHeading gameQuery={gameQuery} />
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
         {error && (
           <div className="text-center text-red-500">Error: {error}</div>
