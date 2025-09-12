@@ -22,39 +22,40 @@ const GameGrid = ({ gameQuery }: Props) => {
         )}
         {isLoading &&
           skeletons.map((key) => <ImageSkeletonContainer key={key} />)}
-        {gridData.map((game) => (
-          <div
-            key={game.id}
-            className="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-shadow"
-          >
-            <img
-              src={
-                game.artwork ||
-                "https://media.istockphoto.com/id/1409329028/vector/no-picture-available-placeholder-thumbnail-icon-illustration-design.jpg?s=612x612&w=0&k=20&c=_zOuJu755g2eEUioiOUdz_mHKJQJn-tDgIAhQzyeKUQ="
-              }
-              alt={game.name}
-              className="w-full h-48 object-cover"
-            />
-            <div className="p-4">
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-                {game.name}
-              </h3>
-              <p className="text-sm text-gray-600 dark:text-gray-300">
-                Genres: {game.genres.join(", ")}
-              </p>
-              <p className="text-sm text-gray-600 dark:text-gray-300">
-                Platforms: {game.platforms.join(", ")}
-              </p>
-              <p className="text-sm text-gray-600 dark:text-gray-300">
-                Rating: ⭐ {game.total_rating}
-              </p>
-              <p className="text-sm text-gray-600 dark:text-gray-300">
-                Release:{" "}
-                {new Date(game.release_date * 1000).toLocaleDateString()}
-              </p>
+        {!isLoading &&
+          gridData.map((game) => (
+            <div
+              key={game.id}
+              className="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-shadow"
+            >
+              <img
+                src={
+                  game.artwork ||
+                  "https://media.istockphoto.com/id/1409329028/vector/no-picture-available-placeholder-thumbnail-icon-illustration-design.jpg?s=612x612&w=0&k=20&c=_zOuJu755g2eEUioiOUdz_mHKJQJn-tDgIAhQzyeKUQ="
+                }
+                alt={game.name}
+                className="w-full h-48 object-cover"
+              />
+              <div className="p-4">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                  {game.name}
+                </h3>
+                <p className="text-sm text-gray-600 dark:text-gray-300">
+                  Genres: {game.genres.join(", ")}
+                </p>
+                <p className="text-sm text-gray-600 dark:text-gray-300">
+                  Platforms: {game.platforms.join(", ")}
+                </p>
+                <p className="text-sm text-gray-600 dark:text-gray-300">
+                  Rating: ⭐ {game.total_rating}
+                </p>
+                <p className="text-sm text-gray-600 dark:text-gray-300">
+                  Release:{" "}
+                  {new Date(game.release_date * 1000).toLocaleDateString()}
+                </p>
+              </div>
             </div>
-          </div>
-        ))}
+          ))}
       </div>
     </main>
   );

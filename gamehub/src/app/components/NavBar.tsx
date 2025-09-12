@@ -53,7 +53,7 @@ const NavBar = () => {
               height={8}
             />
             <span className="self-center text-2xl font-semibold whitespace-nowrap dark:text-white">
-              Flowbite
+              GameHub
             </span>
           </a>
           <form action="#" method="GET" className="hidden md:block md:pl-2">
