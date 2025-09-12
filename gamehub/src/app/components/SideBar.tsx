@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React from "react";
 import GenreList from "./GenreList";
 import { Genre } from "../hooks/useGenres";
 import { Platform } from "../hooks/usePlatforms";
