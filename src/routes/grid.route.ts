@@ -15,76 +15,19 @@ if (!CLIENT_ID || !ACCESS_TOKEN) {
 const getImageUrl = (imageId: string, size = "t_cover_big") =>
   `https://images.igdb.com/igdb/image/upload/${size}/${imageId}.jpg`;
 
-// router.get("/", async (req: Request, res: Response) => {
-//   const query = `
-//     fields id, name, genres, platforms, rating, rating_count, first_release_date, artworks;
-//     sort rating desc;
-//     limit 10;
-//   `;
-
-//   try {
-//     const gameRes = await axios.post("https://api.igdb.com/v4/games", query, {
-//       headers: {
-//         "Client-ID": CLIENT_ID,
-//         Authorization: `Bearer ${ACCESS_TOKEN}`,
-//         "Content-Type": "text/plain",
-//       },
-//     });
-
-//     const games = gameRes.data;
-
-//     // Extract artwork IDs
-//     const artworkIds = games.flatMap((g: any) => g.artworks || []);
-//     const uniqueArtworkIds = [...new Set(artworkIds)];
-
-//     // Fetch artwork image_ids
-//     const artworkQuery = `
-//       fields id, image_id;
-//       where id = (${uniqueArtworkIds.join(",")});
-//       limit ${uniqueArtworkIds.length};
-//     `;
-
-//     const artworkRes = await axios.post(
-//       "https://api.igdb.com/v4/artworks",
-//       artworkQuery,
-//       {
-//         headers: {
-//           "Client-ID": CLIENT_ID,
-//           Authorization: `Bearer ${ACCESS_TOKEN}`,
-//           "Content-Type": "text/plain",
-//         },
-//       }
-//     );
-
-//     const artworkMap = Object.fromEntries(
-//       artworkRes.data.map((art: any) => [art.id, getImageUrl(art.image_id)])
-//     );
-
-//     // Attach image URLs to games
-//     const enrichedGames = games.map((game: any) => ({
-//       id: game.id,
-//       name: game.name,
-//       genres: game.genres,
-//       platforms: game.platforms,
-//       rating: game.rating,
-//       rating_count: game.rating_count,
-//       release_date: game.first_release_date,
-//       artwork: game.artworks?.length ? artworkMap[game.artworks[0]] : null,
-//     }));
-
-//     res.json(enrichedGames);
-//   } catch (err) {
-//     if (err instanceof Error) {
-//       res.status(500).json({ error: err.message });
-//     } else {
-//       res.status(500).json({ error: "Unknown error" });
-//     }
-//   }
-// });
-
 router.get("/", async (req: Request, res: Response) => {
+  console.log("Query params:", req.query);
+  const genreId = Number(req.query.genresId);
+  const genreFilter = Number.isInteger(genreId)
+    ? `where genres = [${genreId}];`
+    : "";
+  // const selectedPlatform = req.query.platform as string | undefined;
+  // const sortOrder = req.query.sortOrder as string | undefined;
+  // const searchText = req.query.searchText as string | undefined;
+
   const query = `
     fields id, name, genres, platforms, total_rating, total_rating_count, first_release_date, artworks;
+    ${genreFilter}
     sort total_rating desc;
     limit 30;
   `;

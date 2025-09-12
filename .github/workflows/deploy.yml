@@ -12,17 +12,27 @@ jobs:
       - name: Checkout Repo
         uses: actions/checkout@v4
 
-      - name: Copy Files via SCP
-        uses: appleboy/scp-action@master
+      # - name: Copy Files via SCP
+      #   uses: appleboy/scp-action@master
+      #   with:
+      #     host: ${{ secrets.SSH_HOST }}
+      #     username: root
+      #     key: ${{ secrets.SSH_PRIVATE_KEY }}
+      #     port: 22
+      #     source: "."
+      #     target: "/var/www/fs-be-node-project"
+      #     overwrite: true
+      #     strip_components: 1
+
+      - name: Deploy with Rsync
+        uses: burnett01/rsync-deployments@6.0.0
         with:
-          host: ${{ secrets.SSH_HOST }}
-          username: root
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          port: 22
-          source: "."
-          target: "/var/www/fs-be-node-project"
-          overwrite: true
-          strip_components: 1
+          switches: -avz --delete
+          path: ./
+          remote_path: /var/www/fs-be-node-project
+          remote_host: ${{ secrets.SSH_HOST }}
+          remote_user: root
+          remote_key: ${{ secrets.SSH_PRIVATE_KEY }}
 
       - name: Setup & Run Node.js + Next.js Apps
         uses: appleboy/ssh-action@master
