@@ -198,7 +198,6 @@ import dotenv from "dotenv";
 import helmet from "helmet";
 import morgan from "morgan";
 import debug from "debug";
-import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 import cors from "cors";
@@ -211,6 +210,7 @@ import { router as authorRouter } from "./routes/author.route.js";
 import { router as gamesRouter } from "./routes/games.route.js";
 import { router as artworksRouter } from "./routes/artworks.route.js";
 import { router as gridRouter } from "./routes/grid.route.js";
+import { router as genreRouter } from "./routes/genre.route.js";
 import { ErrorWithStatus } from "./controllers/course.controller.js";
 
 dotenv.config();
@@ -248,6 +248,7 @@ app.use("/api/author", authorRouter);
 app.use("/api/games", gamesRouter);
 app.use("/api/artworks", artworksRouter);
 app.use("/api/grid", gridRouter);
+app.get("/api/genres", genreRouter);
 
 // Error handling middleware
 app.use(

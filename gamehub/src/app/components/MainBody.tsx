@@ -1,7 +1,6 @@
 /* eslint-disable @next/next/no-img-element */
 import React from "react";
 import useGamesGrid from "../hooks/useGameGrid";
-import ImageSkeleton from "./ImageSkeleton";
 import ImageSkeletonContainer from "./ImageSkeletonContainer";
 
 const MainBody = () => {
