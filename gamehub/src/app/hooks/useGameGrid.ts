@@ -1,4 +1,6 @@
+import { GameQuery } from "../page";
 import useData from "./useData";
+// import { Genre } from "./useGenres";
 
 export interface GameGrid {
   id: number;
@@ -11,6 +13,19 @@ export interface GameGrid {
   total_rating_count: number;
 }
 
-const useGamesGrid = () => useData<GameGrid>("/api/grid");
+const useGamesGrid = (gameQuery: GameQuery) => {
+  return useData<GameGrid>(
+    `/api/grid`,
+    {
+      params: {
+        genresId: gameQuery.genre?.id,
+        // platforms: gameQuery.platform?.id,
+        // ordering: gameQuery.sortOrder,
+        // search: gameQuery.searchText,
+      },
+    },
+    [gameQuery]
+  );
+};
 
 export default useGamesGrid;

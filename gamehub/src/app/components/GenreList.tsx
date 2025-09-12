@@ -39,7 +39,7 @@ const GenreList = ({ selectedGenre, onSelectGenre }: Props) => {
             />
             <button
               onClick={() => onSelectGenre(genre)}
-              className={`text-left text-md transition-colors hover:text-white ${
+              className={`text-left text-md transition-colors hover:text-white cursor-pointer ${
                 genre.id === selectedGenre?.id
                   ? "font-bold text-white"
                   : "font-normal text-gray-300"
