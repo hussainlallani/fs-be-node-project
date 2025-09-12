@@ -1,43 +1,31 @@
 /* eslint-disable @next/next/no-img-element */
-import axios from "axios";
-import React, { useEffect } from "react";
-
-interface Game {
-  id: number;
-  name: string;
-  artwork: string;
-  genres: string[];
-  platforms: string[];
-  total_rating: number;
-  release_date: number;
-}
+import React from "react";
+import useGamesGrid from "../hooks/useGameGrid";
+import ImageSkeleton from "./ImageSkeleton";
+import ImageSkeletonContainer from "./ImageSkeletonContainer";
 
 const MainBody = () => {
-  const [gridData, setGridData] = React.useState<Game[]>([]);
-
-  useEffect(() => {
-    // Placeholder for future data fetching logic
-    axios
-      .get("http://127.0.0.1:3000/api/grid")
-      .then((response) => {
-        console.log("Grid Data:", response.data);
-        setGridData(response.data);
-      })
-      .catch((error) => {
-        console.error("Error fetching grid data:", error);
-      });
-  }, []);
+  const { data: gridData, isLoading, error } = useGamesGrid();
+  const skeletons = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
 
   return (
     <main className="p-4 md:ml-64 h-auto pt-20">
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
+        {error && (
+          <div className="text-center text-red-500">Error: {error}</div>
+        )}
+        {isLoading &&
+          skeletons.map((key) => <ImageSkeletonContainer key={key} />)}
         {gridData.map((game) => (
           <div
             key={game.id}
             className="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-shadow"
           >
             <img
-              src={game.artwork}
+              src={
+                game.artwork ||
+                "https://media.istockphoto.com/id/1409329028/vector/no-picture-available-placeholder-thumbnail-icon-illustration-design.jpg?s=612x612&w=0&k=20&c=_zOuJu755g2eEUioiOUdz_mHKJQJn-tDgIAhQzyeKUQ="
+              }
               alt={game.name}
               className="w-full h-48 object-cover"
             />
@@ -61,13 +49,7 @@ const MainBody = () => {
             </div>
           </div>
         ))}
-        {/* <div className="border-2 border-dashed border-gray-300 rounded-lg dark:border-gray-600 h-32 md:h-64" />
-        <div className="border-2 border-dashed rounded-lg border-gray-300 dark:border-gray-600 h-32 md:h-64" />
-        <div className="border-2 border-dashed rounded-lg border-gray-300 dark:border-gray-600 h-32 md:h-64" />
-        <div className="border-2 border-dashed rounded-lg border-gray-300 dark:border-gray-600 h-32 md:h-64" /> */}
       </div>
-      {/* <div className="border-2 border-dashed rounded-lg border-gray-300 dark:border-gray-600 h-96 mb-4" />
-      <div className="border-2 border-dashed rounded-lg border-gray-300 dark:border-gray-600 h-96 mb-4" /> */}
     </main>
   );
 };
