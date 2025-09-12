@@ -4,6 +4,7 @@
 import React from "react";
 import useGenres, { Genre } from "../hooks/useGenres";
 import getCroppedImageUrl from "../services/image-url";
+import ListSkeletonContainer from "./ListSkeletonContainer";
 
 interface Props {
   onSelectGenre: (genre: Genre) => void;
@@ -12,20 +13,20 @@ interface Props {
 
 const GenreList = ({ selectedGenre, onSelectGenre }: Props) => {
   const { data, isLoading, error } = useGenres();
+  const skeletons = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
 
   if (error) return null;
-
-  if (isLoading)
-    return (
-      <div className="flex justify-center items-center py-6">
-        <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-white"></div>
-      </div>
-    );
 
   return (
     <div className="mt-9 mb-3">
       <h2 className="text-2xl font-semibold text-white mb-4">Genres</h2>
       <ul className="space-y-3">
+        {isLoading &&
+          skeletons.map((key) => (
+            <div key={key}>
+              <ListSkeletonContainer />
+            </div>
+          ))}
         {data.map((genre) => (
           <li key={genre.id} className="flex items-center space-x-3">
             <img
