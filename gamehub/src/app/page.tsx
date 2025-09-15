@@ -15,6 +15,8 @@ export interface GameQuery {
     direction: "desc" | "asc";
   };
   searchText: string;
+  offset?: number;
+  limit?: number;
 }
 
 export default function Home() {
@@ -26,6 +28,8 @@ export default function Home() {
       direction: "desc",
     },
     searchText: "",
+    limit: 30,
+    offset: 0,
   });
 
   return (

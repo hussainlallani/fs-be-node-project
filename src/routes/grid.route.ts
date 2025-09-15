@@ -181,8 +181,8 @@ router.get("/", async (req: Request, res: Response) => {
   const searchText = rawSearch.replace(/[^a-zA-Z0-9\s]/g, "");
   const sortField = req.query.sortField?.toString().trim() || "total_rating";
   const sortDirection = req.query.sortDirection?.toString().trim() || "desc";
-
-  console.log("Sort options:", sortField, sortDirection);
+  const offset = Number(req.query.offset) || 0;
+  const limit = Number(req.query.limit) || 30;
 
   const filters: string[] = [];
 
@@ -207,7 +207,8 @@ router.get("/", async (req: Request, res: Response) => {
     fields id, name, genres, platforms, total_rating, total_rating_count, first_release_date, artworks;
     ${whereClause}
     ${sortClause}
-    limit 30;
+    limit ${limit};
+    offset ${offset};
   `;
 
   try {

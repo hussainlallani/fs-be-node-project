@@ -23,6 +23,8 @@ const useGamesGrid = (gameQuery: GameQuery) => {
         search: gameQuery.searchText,
         sortField: gameQuery.sortOrder.field,
         sortDirection: gameQuery.sortOrder.direction,
+        limit: gameQuery.limit,
+        offset: gameQuery.offset,
       },
     },
     [gameQuery]
