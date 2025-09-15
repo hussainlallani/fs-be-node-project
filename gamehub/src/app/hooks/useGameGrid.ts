@@ -18,7 +18,7 @@ const useGamesGrid = (gameQuery: GameQuery) => {
     `/api/grid`,
     {
       params: {
-        genresId: gameQuery.genre?.id,
+        genreId: gameQuery.genre?.id,
         platformId: gameQuery.platform?.id,
         // ordering: gameQuery.sortOrder,
         // search: gameQuery.searchText,

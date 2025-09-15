@@ -5,6 +5,11 @@ dotenv.config();
 
 export const router = express.Router();
 
+interface CustomError extends Error {
+  status?: number;
+  details?: any;
+}
+
 const CLIENT_ID = process.env.IGDB_CLIENT_ID || "";
 const ACCESS_TOKEN = process.env.IGDB_ACCESS_TOKEN || "";
 
@@ -20,25 +25,21 @@ router.get("/", async (req: Request, res: Response) => {
   const genreId = Number(req.query.genreId);
   const platformId = Number(req.query.platformId);
 
-  const genreFilter = Number.isInteger(genreId)
-    ? `where genres = [${genreId}];`
-    : "";
+  const filters: string[] = [];
 
-  const platformFilter = Number.isInteger(platformId)
-    ? `platforms = [${platformId}]`
-    : "";
+  if (!isNaN(genreId) && Number.isInteger(genreId)) {
+    filters.push(`genres = [${genreId}]`);
+  }
 
-  const combinedFilter = genreFilter
-    ? platformFilter
-      ? `where genres = [${genreId}] and platforms = [${platformId}];`
-      : `where genres = [${genreId}];`
-    : platformFilter
-    ? `where platforms = [${platformId}];`
-    : "";
+  if (!isNaN(platformId) && Number.isInteger(platformId)) {
+    filters.push(`platforms = [${platformId}]`);
+  }
+
+  const whereClause = filters.length ? `where ${filters.join(" & ")};` : "";
 
   const query = `
     fields id, name, genres, platforms, total_rating, total_rating_count, first_release_date, artworks;
-    ${combinedFilter}
+    ${whereClause}
     sort total_rating desc;
     limit 30;
   `;
@@ -53,6 +54,14 @@ router.get("/", async (req: Request, res: Response) => {
     });
 
     const games = gameRes.data;
+
+    // ✅ Check for empty results
+    if (!games || games.length === 0) {
+      return res.status(404).json({
+        error:
+          "We couldn’t find any games matching your selected platform and genre. Try adjusting your filters or exploring other categories.",
+      });
+    }
 
     // Collect all genre and platform IDs
     const genreIds = [...new Set(games.flatMap((g: any) => g.genres || []))];
@@ -133,9 +142,34 @@ router.get("/", async (req: Request, res: Response) => {
     }));
 
     res.json(enrichedGames);
-  } catch (err) {
-    res
-      .status(500)
-      .json({ error: err instanceof Error ? err.message : "Unknown error" });
+  } catch (error: any) {
+    const err: CustomError = new Error("Failed to fetch games");
+    err.details = error;
+
+    if (axios.isAxiosError(error)) {
+      const status = error.response?.status;
+      err.status = status;
+
+      if (status === 400) {
+        err.message = "Bad request. Please check your query parameters.";
+      } else if (status === 401 || status === 403) {
+        err.message =
+          "Authentication failed. Please verify your IGDB credentials.";
+      } else if (status === 404) {
+        err.message = "No games found matching your filters.";
+      } else {
+        err.message =
+          error.response?.data?.message ||
+          "Something went wrong while contacting IGDB. Please try again later.";
+      }
+
+      console.error("IGDB API Error:", err.message, err.details);
+      return res.status(status || 500).json({ message: err.message });
+    }
+
+    err.status = 500;
+    err.message = "Unexpected server error. We're looking into it.";
+    console.error("Unhandled Error:", err.message, err.details);
+    return res.status(500).json({ message: err.message });
   }
 });

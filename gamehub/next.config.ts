@@ -10,6 +10,10 @@ const nextConfig: NextConfig = {
     basePath: "/gamehub",
   },
   images: {
+    domains: [
+      "images.igdb.com",
+      "media.istockphoto.com", // ✅ add this
+    ],
     remotePatterns: [
       {
         protocol: "https",

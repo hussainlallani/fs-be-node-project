@@ -10,12 +10,13 @@ const useData = <T>(
   deps: any[] = []
 ) => {
   const [data, setData] = useState<T[]>([]);
-  const [error, setError] = useState("");
-  const [isLoading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [isLoading, setLoading] = useState<boolean>(false);
 
   useEffect(() => {
     const controller = new AbortController();
     setLoading(true);
+    setError(null);
 
     apiClient
       .get<T[] | { results: T[] }>(endpoint, {
