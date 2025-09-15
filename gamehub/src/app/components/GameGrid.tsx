@@ -1,11 +1,12 @@
 /* eslint-disable @next/next/no-img-element */
-import React, { useEffect } from "react";
+import React from "react";
 import useGamesGrid from "../hooks/useGameGrid";
 import ImageSkeletonContainer from "./ImageSkeletonContainer";
 import { GameQuery } from "../page";
 import GameHeading from "./GameHeading";
 import PlatformSelector from "./PlatformSelector";
 import Image from "next/image";
+import formatNumber from "../lib/format-number";
 
 interface Props {
   gameQuery: GameQuery;
@@ -66,11 +67,12 @@ const GameGrid = ({ gameQuery, setGameQuery }: Props) => {
                 <hr className="h-px my-2 bg-gray-200 border-0 dark:bg-gray-700" />
                 <p className="text-sm text-gray-600 dark:text-gray-300">
                   Rating: ⭐{" "}
-                  {game.total_rating
+                  {/* {game.total_rating
                     ? game.total_rating === 100
                       ? game.total_rating
                       : game.total_rating.toFixed(2)
-                    : "N/A"}
+                    : "N/A"} */}
+                  {formatNumber(game.total_rating) || "N/A"}
                 </p>
                 <hr className="h-px my-2 bg-gray-200 border-0 dark:bg-gray-700" />
                 <p className="text-sm text-gray-600 dark:text-gray-300">

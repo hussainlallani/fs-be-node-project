@@ -25,10 +25,10 @@ export default function Home() {
   return (
     <>
       <NavBar
-      // searchText={gameQuery.searchText}
-      // onSearch={(text) =>
-      //   setGameQuery((prev) => ({ ...prev, searchText: text }))
-      // }
+        searchText={gameQuery.searchText}
+        onSearch={(text: string) =>
+          setGameQuery((prev) => ({ ...prev, searchText: text }))
+        }
       />
       <SideBar
         selectedGenre={gameQuery.genre}
