@@ -34,7 +34,7 @@ export default function Home() {
         selectedGenre={gameQuery.genre}
         onSelectGenre={(genre) => setGameQuery((prev) => ({ ...prev, genre }))}
       />
-      <GameGrid gameQuery={gameQuery} />
+      <GameGrid gameQuery={gameQuery} setGameQuery={setGameQuery} />
     </>
   );
 }

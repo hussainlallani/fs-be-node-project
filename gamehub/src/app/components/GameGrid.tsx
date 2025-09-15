@@ -4,20 +4,29 @@ import useGamesGrid from "../hooks/useGameGrid";
 import ImageSkeletonContainer from "./ImageSkeletonContainer";
 import { GameQuery } from "../page";
 import GameHeading from "./GameHeading";
+import PlatformSelector from "./PlatformSelector";
 
 interface Props {
   gameQuery: GameQuery;
+  setGameQuery: (query: GameQuery) => void;
 }
 
-const GameGrid = ({ gameQuery }: Props) => {
+const GameGrid = ({ gameQuery, setGameQuery }: Props) => {
   const { data: gridData, isLoading, error } = useGamesGrid(gameQuery ?? null);
   const skeletons = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
 
   return (
     <main className="p-4 md:ml-64 h-auto pt-20">
+      <PlatformSelector
+        selectedPlatform={gameQuery.platform}
+        onSelectPlatform={(platform) =>
+          setGameQuery({ ...gameQuery, platform })
+        }
+      />
       <GameHeading gameQuery={gameQuery} />
+
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
-        {error && (
+        {!isLoading && error && (
           <div className="text-center text-red-500">Error: {error}</div>
         )}
         {isLoading &&

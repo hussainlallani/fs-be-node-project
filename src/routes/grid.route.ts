@@ -17,17 +17,28 @@ const getImageUrl = (imageId: string, size = "t_cover_big") =>
 
 router.get("/", async (req: Request, res: Response) => {
   console.log("Query params:", req.query);
-  const genreId = Number(req.query.genresId);
+  const genreId = Number(req.query.genreId);
+  const platformId = Number(req.query.platformId);
+
   const genreFilter = Number.isInteger(genreId)
     ? `where genres = [${genreId}];`
     : "";
-  // const selectedPlatform = req.query.platform as string | undefined;
-  // const sortOrder = req.query.sortOrder as string | undefined;
-  // const searchText = req.query.searchText as string | undefined;
+
+  const platformFilter = Number.isInteger(platformId)
+    ? `platforms = [${platformId}]`
+    : "";
+
+  const combinedFilter = genreFilter
+    ? platformFilter
+      ? `where genres = [${genreId}] and platforms = [${platformId}];`
+      : `where genres = [${genreId}];`
+    : platformFilter
+    ? `where platforms = [${platformId}];`
+    : "";
 
   const query = `
     fields id, name, genres, platforms, total_rating, total_rating_count, first_release_date, artworks;
-    ${genreFilter}
+    ${combinedFilter}
     sort total_rating desc;
     limit 30;
   `;

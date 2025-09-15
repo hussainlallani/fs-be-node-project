@@ -19,7 +19,7 @@ const useGamesGrid = (gameQuery: GameQuery) => {
     {
       params: {
         genresId: gameQuery.genre?.id,
-        // platforms: gameQuery.platform?.id,
+        platformId: gameQuery.platform?.id,
         // ordering: gameQuery.sortOrder,
         // search: gameQuery.searchText,
       },
