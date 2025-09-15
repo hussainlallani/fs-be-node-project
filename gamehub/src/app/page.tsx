@@ -10,7 +10,10 @@ import GameGrid from "./components/GameGrid";
 export interface GameQuery {
   genre: Genre | null;
   platform: Platform | null;
-  sortOrder: string;
+  sortOrder: {
+    field: "first_release_date" | "name" | "total_rating";
+    direction: "desc" | "asc";
+  };
   searchText: string;
 }
 
@@ -18,7 +21,10 @@ export default function Home() {
   const [gameQuery, setGameQuery] = useState<GameQuery>({
     genre: null,
     platform: null,
-    sortOrder: "",
+    sortOrder: {
+      field: "total_rating",
+      direction: "desc",
+    },
     searchText: "",
   });
 

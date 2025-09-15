@@ -7,6 +7,7 @@ import GameHeading from "./GameHeading";
 import PlatformSelector from "./PlatformSelector";
 import Image from "next/image";
 import formatNumber from "../lib/format-number";
+import SortSelector from "./SortSelector";
 
 interface Props {
   gameQuery: GameQuery;
@@ -19,12 +20,25 @@ const GameGrid = ({ gameQuery, setGameQuery }: Props) => {
 
   return (
     <main className="p-4 md:ml-64 h-auto pt-20">
-      <PlatformSelector
-        selectedPlatform={gameQuery.platform}
-        onSelectPlatform={(platform) =>
-          setGameQuery({ ...gameQuery, platform })
-        }
-      />
+      <div className="flex flex-row gap-4">
+        <div>
+          <PlatformSelector
+            selectedPlatform={gameQuery.platform}
+            onSelectPlatform={(platform) =>
+              setGameQuery({ ...gameQuery, platform })
+            }
+          />
+        </div>
+        <div>
+          <SortSelector
+            selectedSort={gameQuery.sortOrder}
+            onSelectSort={(sort) =>
+              setGameQuery({ ...gameQuery, sortOrder: sort })
+            }
+          />
+        </div>
+      </div>
+
       <GameHeading gameQuery={gameQuery} />
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">

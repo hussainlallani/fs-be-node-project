@@ -175,12 +175,14 @@ const getImageUrl = (imageId: string, size = "t_cover_big") =>
 // });
 
 router.get("/", async (req: Request, res: Response) => {
-  console.log("Query params:", req.query);
-
   const genreId = Number(req.query.genreId);
   const platformId = Number(req.query.platformId);
   const rawSearch = String(req.query.search || "").trim();
   const searchText = rawSearch.replace(/[^a-zA-Z0-9\s]/g, "");
+  const sortField = req.query.sortField?.toString().trim() || "total_rating";
+  const sortDirection = req.query.sortDirection?.toString().trim() || "desc";
+
+  console.log("Sort options:", sortField, sortDirection);
 
   const filters: string[] = [];
 
@@ -198,10 +200,13 @@ router.get("/", async (req: Request, res: Response) => {
 
   const whereClause = filters.length ? `where ${filters.join(" & ")};` : "";
 
+  const sortClause =
+    sortField && sortDirection ? `sort ${sortField} ${sortDirection};` : "";
+
   const query = `
     fields id, name, genres, platforms, total_rating, total_rating_count, first_release_date, artworks;
     ${whereClause}
-    sort total_rating desc;
+    ${sortClause}
     limit 30;
   `;
 

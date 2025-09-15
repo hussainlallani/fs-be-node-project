@@ -1,4 +1,3 @@
-/* eslint-disable @next/next/no-html-link-for-pages */
 "use client";
 import React, { useState, useCallback, useRef } from "react";
 import Image from "next/image";
@@ -39,7 +38,7 @@ const NavBar = ({ searchText, onSearch }: SearchBarProps) => {
       <nav className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 fixed top-0 left-0 right-0 z-50 px-4 py-3">
         <div className="flex items-center justify-between mx-auto w-full gap-4">
           {/* Logo Section */}
-          <a href="/" className="flex items-center gap-2 shrink-0">
+          <a href="/gamehub" className="flex items-center gap-2 shrink-0">
             <Image
               src="https://flowbite.s3.amazonaws.com/logo.svg"
               alt="GameHub Logo"

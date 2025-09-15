@@ -21,7 +21,8 @@ const useGamesGrid = (gameQuery: GameQuery) => {
         genreId: gameQuery.genre?.id,
         platformId: gameQuery.platform?.id,
         search: gameQuery.searchText,
-        // ordering: gameQuery.sortOrder,
+        sortField: gameQuery.sortOrder.field,
+        sortDirection: gameQuery.sortOrder.direction,
       },
     },
     [gameQuery]
