@@ -204,7 +204,7 @@ router.get("/", async (req: Request, res: Response) => {
     sortField && sortDirection ? `sort ${sortField} ${sortDirection};` : "";
 
   const query = `
-    fields id, name, genres, platforms, total_rating, total_rating_count, first_release_date, artworks;
+    fields id, name, genres, platforms, total_rating, total_rating_count, first_release_date, artworks, summary, videos;
     ${whereClause}
     ${sortClause}
     limit ${limit};
@@ -236,7 +236,9 @@ router.get("/", async (req: Request, res: Response) => {
     const artworkIds = [
       ...new Set(games.flatMap((g: any) => g.artworks || [])),
     ];
+    const videoIds = [...new Set(games.flatMap((g: any) => g.videos || []))];
 
+    // Fetch genres
     const genreQuery = `fields id, name; where id = (${genreIds.join(
       ","
     )}); limit ${genreIds.length};`;
@@ -255,6 +257,7 @@ router.get("/", async (req: Request, res: Response) => {
       genreRes.data.map((g: any) => [g.id, g.name])
     );
 
+    // Fetch platforms
     const platformQuery = `fields id, name; where id = (${platformIds.join(
       ","
     )}); limit ${platformIds.length};`;
@@ -273,6 +276,7 @@ router.get("/", async (req: Request, res: Response) => {
       platformRes.data.map((p: any) => [p.id, p.name])
     );
 
+    // Fetch artworks
     const artworkQuery = `fields id, image_id; where id = (${artworkIds.join(
       ","
     )}); limit ${artworkIds.length};`;
@@ -291,6 +295,29 @@ router.get("/", async (req: Request, res: Response) => {
       artworkRes.data.map((art: any) => [art.id, getImageUrl(art.image_id)])
     );
 
+    // Fetch videos
+    const videoQuery = `fields id, game, name, video_id; where id = (${videoIds.join(
+      ","
+    )}); limit ${videoIds.length};`;
+    const videoRes = await axios.post(
+      "https://api.igdb.com/v4/game_videos",
+      videoQuery,
+      {
+        headers: {
+          "Client-ID": CLIENT_ID,
+          Authorization: `Bearer ${ACCESS_TOKEN}`,
+          "Content-Type": "text/plain",
+        },
+      }
+    );
+    const videoMap = Object.fromEntries(
+      videoRes.data.map((vid: any) => [
+        vid.id,
+        `https://www.youtube.com/watch?v=${vid.video_id}`,
+      ])
+    );
+
+    // Enrich games
     const enrichedGames = games.map((game: any) => ({
       id: game.id,
       name: game.name,
@@ -300,6 +327,13 @@ router.get("/", async (req: Request, res: Response) => {
       total_rating_count: game.total_rating_count,
       release_date: game.first_release_date,
       artwork: game.artworks?.length ? artworkMap[game.artworks[0]] : null,
+      artworks: game.artworks?.length
+        ? game.artworks.map((id: number) => artworkMap[id])
+        : null,
+      summary: game.summary || "No summary available.",
+      videos: game.videos?.length
+        ? game.videos.map((id: number) => videoMap[id])
+        : null,
     }));
 
     res.json(enrichedGames);

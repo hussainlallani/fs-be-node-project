@@ -52,15 +52,15 @@ const NavBar = ({ searchText, onSearch }: SearchBarProps) => {
                 height={32}
                 width={32}
               />
-              <span className="self-center text-2xl font-semibold whitespace-nowrap dark:text-white">
+              <span className="hidden sm:block self-center text-2xl font-semibold whitespace-nowrap dark:text-white">
                 GameHub
               </span>
             </a>
           </div>
 
-          <div className="flex items-center md:order-2 space-x-3 md:space-x-0 rtl:space-x-reverse gap-5">
+          <div className="flex items-center md:order-2 space-x-3 md:space-x-0 rtl:space-x-reverse gap-0 sm:gap-5">
             {/* Search Bar Section */}
-            <div className="flex items-center bg-gray-100 dark:bg-gray-700 rounded-full px-3 py-1 flex-grow max-w-[300px]">
+            <div className="flex items-center bg-gray-100 dark:bg-gray-700 rounded-full px-3 py-1 flex-grow max-w-[190px] sm:max-w-[300px]">
               <svg
                 className="w-5 h-5 text-gray-500 dark:text-gray-400"
                 fill="currentColor"
