@@ -11,6 +11,8 @@ export interface GameGrid {
   release_date: number;
   total_rating: number;
   total_rating_count: number;
+  summary: string;
+  videos: { name: string; video_id: string }[] | null;
 }
 
 const useGamesGrid = (gameQuery: GameQuery) => {
