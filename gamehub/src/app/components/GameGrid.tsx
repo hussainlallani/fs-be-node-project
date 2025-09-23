@@ -56,7 +56,7 @@ const GameGrid = ({ gameQuery, setGameQuery }: Props) => {
   const skeletons = Array.from({ length: 12 }, (_, i) => i);
 
   return (
-    <main className="p-4 md:ml-64 h-auto pt-20 text-gray-500 dark:text-gray-400 bg-white dark:bg-gray-800">
+    <main className="p-4 md:ml-64 h-auto pt-31 sm:pt-20 text-gray-500 dark:text-gray-400 bg-white dark:bg-gray-800">
       <div className="flex flex-row gap-4 text-gray-500 dark:text-gray-400 bg-white dark:bg-gray-800">
         <div className="w-auto flex-grow-0">
           <PlatformSelector
