@@ -62,7 +62,7 @@ const SortSelector = ({ selectedSort, onSelectSort }: Props) => {
       {open && (
         <div
           id="dropdown"
-          className="absolute z-10 mt-2 w-full max-w-xs bg-white dark:bg-gray-700 divide-y divide-gray-100 rounded-lg shadow-sm max-h-60 overflow-y-auto"
+          className="absolute z-10 mt-2 max-w-xs bg-white dark:bg-gray-700 divide-y divide-gray-100 rounded-lg shadow-sm max-h-60 overflow-y-auto"
         >
           <ul
             className="py-2 text-sm text-gray-700 dark:text-gray-200"

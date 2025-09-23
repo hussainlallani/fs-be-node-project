@@ -58,7 +58,7 @@ const GameGrid = ({ gameQuery, setGameQuery }: Props) => {
   return (
     <main className="p-4 md:ml-64 h-auto pt-20 text-gray-500 dark:text-gray-400 bg-white dark:bg-gray-800">
       <div className="flex flex-row gap-4 text-gray-500 dark:text-gray-400 bg-white dark:bg-gray-800">
-        <div className="w-1/10">
+        <div className="w-auto flex-grow-0">
           <PlatformSelector
             selectedPlatform={gameQuery.platform}
             onSelectPlatform={(platform) =>
@@ -66,7 +66,7 @@ const GameGrid = ({ gameQuery, setGameQuery }: Props) => {
             }
           />
         </div>
-        <div className="w-1/10">
+        <div className="w-auto flex-grow-0">
           <SortSelector
             selectedSort={gameQuery.sortOrder}
             onSelectSort={(sort) =>

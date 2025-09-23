@@ -101,7 +101,7 @@ const NavBar = ({ searchText, onSearch }: SearchBarProps) => {
             <div className="w-px h-6 bg-gray-200 dark:bg-gray-600" />
 
             {/* User Menu */}
-            <div>
+            <div className="hidden sm:flex">
               <button
                 type="button"
                 className="flex text-sm bg-gray-800 rounded-full md:me-0 focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600"
