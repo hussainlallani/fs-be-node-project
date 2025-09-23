@@ -56,20 +56,24 @@ const GameGrid = ({ gameQuery, setGameQuery }: Props) => {
   const skeletons = Array.from({ length: 12 }, (_, i) => i);
 
   return (
-    <main className="p-4 md:ml-64 h-auto pt-20">
-      <div className="flex flex-row gap-4">
-        <PlatformSelector
-          selectedPlatform={gameQuery.platform}
-          onSelectPlatform={(platform) =>
-            setGameQuery((prev) => ({ ...prev, platform, offset: 0 }))
-          }
-        />
-        <SortSelector
-          selectedSort={gameQuery.sortOrder}
-          onSelectSort={(sort) =>
-            setGameQuery((prev) => ({ ...prev, sortOrder: sort, offset: 0 }))
-          }
-        />
+    <main className="p-4 md:ml-64 h-auto pt-20 text-gray-500 dark:text-gray-400 bg-white dark:bg-gray-800">
+      <div className="flex flex-row gap-4 text-gray-500 dark:text-gray-400 bg-white dark:bg-gray-800">
+        <div className="w-1/12">
+          <PlatformSelector
+            selectedPlatform={gameQuery.platform}
+            onSelectPlatform={(platform) =>
+              setGameQuery((prev) => ({ ...prev, platform, offset: 0 }))
+            }
+          />
+        </div>
+        <div className="w-1/12">
+          <SortSelector
+            selectedSort={gameQuery.sortOrder}
+            onSelectSort={(sort) =>
+              setGameQuery((prev) => ({ ...prev, sortOrder: sort, offset: 0 }))
+            }
+          />
+        </div>
       </div>
 
       <GameHeading gameQuery={gameQuery} />
@@ -82,7 +86,7 @@ const GameGrid = ({ gameQuery, setGameQuery }: Props) => {
           games.map((game) => (
             <div
               key={game.id}
-              className="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-shadow"
+              className="bg-white dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-700 rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-shadow"
             >
               <div className="relative w-full h-48">
                 <Image

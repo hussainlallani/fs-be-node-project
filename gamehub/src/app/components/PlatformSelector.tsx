@@ -15,18 +15,28 @@ const PlatformSelector = ({ onSelectPlatform, selectedPlatform }: Props) => {
   if (error) return null;
 
   return (
-    <div className="relative inline-block text-left">
+    <>
       <button
+        id="dropdownDefaultButton"
         onClick={() => setOpen(!open)}
-        className="inline-flex justify-between items-center px-4 py-2 bg-gray-800 text-white text-sm font-medium rounded-md hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+        className="inline-flex justify-between items-center w-full px-4 py-2 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 border-2 border-gray-300 dark:border-gray-700 text-sm font-medium rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring focus:ring-offset no-underline"
+        type="button"
       >
-        {selectedPlatform?.name || "Platforms"}
+        <span className="overflow-hidden text-ellipsis whitespace-nowrap">
+          {selectedPlatform?.name || "Platforms"}
+        </span>
         <BsChevronDown className="ml-2" />
       </button>
 
       {open && (
-        <div className="absolute z-10 mt-2 w-48 max-h-60 overflow-y-auto bg-white rounded-md shadow-lg ring-1 ring-black ring-opacity-5">
-          <ul className="py-1">
+        <div
+          id="dropdown"
+          className="absolute z-10 mt-2 w-full max-w-xs bg-white dark:bg-gray-700 divide-y divide-gray-100 rounded-lg shadow-sm max-h-60 overflow-y-auto"
+        >
+          <ul
+            className="py-2 text-sm text-gray-700 dark:text-gray-200"
+            aria-labelledby="dropdownDefaultButton"
+          >
             {data.map((platform) => (
               <li
                 key={platform.id}
@@ -34,7 +44,7 @@ const PlatformSelector = ({ onSelectPlatform, selectedPlatform }: Props) => {
                   onSelectPlatform(platform);
                   setOpen(false);
                 }}
-                className="px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer"
+                className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white cursor-pointer"
               >
                 {platform.name}
               </li>
@@ -42,7 +52,7 @@ const PlatformSelector = ({ onSelectPlatform, selectedPlatform }: Props) => {
           </ul>
         </div>
       )}
-    </div>
+    </>
   );
 };
 
