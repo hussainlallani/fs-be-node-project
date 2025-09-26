@@ -1,15 +1,13 @@
-/* eslint-disable @next/next/no-img-element */
 import React, { useEffect, useState } from "react";
 import useGamesGrid from "../hooks/useGameGrid";
 import ImageSkeletonContainer from "./ImageSkeletonContainer";
 import { GameQuery } from "../page";
 import GameHeading from "./GameHeading";
 import PlatformSelector from "./PlatformSelector";
-import Image from "next/image";
-import formatNumber from "../lib/format-number";
 import SortSelector from "./SortSelector";
 import LoadMoreButton from "./LoadMoreButton";
 import { GameGrid as GameType } from "../hooks/useGameGrid";
+import GameCard from "./GameCard";
 
 interface Props {
   gameQuery: GameQuery;
@@ -20,17 +18,8 @@ const GameGrid = ({ gameQuery, setGameQuery }: Props) => {
   const [games, setGames] = useState<GameType[]>([]);
   const [loadingMore, setLoadingMore] = useState(false);
 
-  function chunkArray(array, chunkSize) {
-    const chunks = [];
-    for (let i = 0; i < array.length; i += chunkSize) {
-      chunks.push(array.slice(i, i + chunkSize));
-    }
-    return chunks;
-  }
-
   const { data: gridData, isLoading, error } = useGamesGrid(gameQuery);
 
-  // Append new data when gridData changes
   useEffect(() => {
     if (gridData) {
       setGames((prev) => [...prev, ...gridData]);
@@ -38,7 +27,6 @@ const GameGrid = ({ gameQuery, setGameQuery }: Props) => {
     }
   }, [gridData]);
 
-  // Reset games and offset when filters change
   useEffect(() => {
     setGames([]);
     setGameQuery((prev) => ({
@@ -61,25 +49,30 @@ const GameGrid = ({ gameQuery, setGameQuery }: Props) => {
     }));
   };
 
-  const skeletons = Array.from({ length: 12 }, (_, i) => i);
+  const columnCount = 5;
 
-  const items = Array.from({ length: 16 }, (_, i) => `Item ${i + 1}`); // or use your `n` elements
+  const distributeHorizontally = <T,>(
+    items: T[] = [],
+    numColumns: number
+  ): T[][] => {
+    const columns: T[][] = Array.from({ length: numColumns }, () => []);
+    items.forEach((item, index) => {
+      columns[index % numColumns].push(item);
+    });
+    return columns;
+  };
 
-  const chunkSize = 4;
-  const chunkedItems = [];
-
-  if (games.length > 0 && !isLoading) {
-    for (let i = 0; i < games.length; i += chunkSize) {
-      chunkedItems.push(games.slice(i, i + chunkSize));
-    }
-  }
-
-  console.log(chunkedItems);
+  const columns = distributeHorizontally(games, columnCount);
+  const initialSkeletons = Array.from({ length: 12 }, (_, i) => i);
+  const loadingSkeletons = loadingMore
+    ? distributeHorizontally(Array.from({ length: 5 }), columnCount)
+    : [];
 
   return (
-    <main className="p-4 md:ml-64 h-auto pt-31 sm:pt-20 text-gray-500 dark:text-gray-400 bg-white dark:bg-gray-800">
-      <div className="flex flex-row gap-4 text-gray-500 dark:text-gray-400 bg-white dark:bg-gray-800">
-        <div className="w-auto flex-grow-0">
+    <main className="p-4 md:ml-64 h-auto pt-32 sm:pt-20 text-gray-500 dark:text-gray-400 bg-white dark:bg-gray-800 min-h-screen">
+      {/* Filters */}
+      <div className="flex flex-row gap-4 mb-6">
+        <div className="w-auto">
           <PlatformSelector
             selectedPlatform={gameQuery.platform}
             onSelectPlatform={(platform) =>
@@ -87,7 +80,7 @@ const GameGrid = ({ gameQuery, setGameQuery }: Props) => {
             }
           />
         </div>
-        <div className="w-auto flex-grow-0">
+        <div className="w-auto">
           <SortSelector
             selectedSort={gameQuery.sortOrder}
             onSelectSort={(sort) =>
@@ -97,313 +90,50 @@ const GameGrid = ({ gameQuery, setGameQuery }: Props) => {
         </div>
       </div>
 
+      {/* Heading */}
       <GameHeading gameQuery={gameQuery} />
 
-      {/* <div className="grid grid-cols-1 sm:grid-cols-2 lg:flex lg:"> */}
-      {/* <div className="flex flex-row justify-center gap-5">
-        <div className="flex flex-col max-w-1/4 gap-5">
-          {isLoading &&
-            skeletons.map((key) => <ImageSkeletonContainer key={key} />)}
-          {!isLoading &&
-            !error &&
-            games.map(
-              (game, index) =>
-                index < 4 && (
-                  <div
-                    key={index}
-                    className="bg-white dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-700 rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-shadow duration-300 group cursor-pointers max-h-96  hover:max-h-full static z-0 hover:z-50"
-                  >
-                    <div className="relative w-full h-48">
-                      <Image
-                        src={
-                          game.artwork ??
-                          "https://media.istockphoto.com/id/1409329028/vector/no-picture-available-placeholder-thumbnail-icon-illustration-design.jpg?s=612x612&w=0&k=20&c=_zOuJu755g2eEUioiOUdz_mHKJQJn-tDgIAhQzyeKUQ="
-                        }
-                        alt={game.name}
-                        className="w-full h-48 object-cover"
-                        width={400}
-                        height={192}
-                      />
-                    </div>
-                    <div className="p-4">
-                      <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-                        {game.name}
-                      </h3>
-                      <hr className="h-px my-2 bg-gray-200 border-0 dark:bg-gray-700" />
-                      <p className="text-sm text-gray-600 dark:text-gray-300">
-                        Genres: {game.genres.join(", ")}
-                      </p>
-                      <hr className="h-px my-2 bg-gray-200 border-0 dark:bg-gray-700" />
-                      <p className="text-sm text-gray-600 dark:text-gray-300">
-                        Platforms: {game.platforms.join(", ")}
-                      </p>
-                      <hr className="h-px my-2 bg-gray-200 border-0 dark:bg-gray-700" />
-                      <p className="text-sm text-gray-600 dark:text-gray-300">
-                        Rating: ⭐ {formatNumber(game.total_rating) || "N/A"}
-                      </p>
-                      <hr className="h-px my-2 bg-gray-200 border-0 dark:bg-gray-700" />
-                      <p className="text-sm text-gray-600 dark:text-gray-300">
-                        Release:{" "}
-                        {new Date(
-                          game.release_date * 1000
-                        ).toLocaleDateString()}
-                      </p>
-                      <hr className="h-px my-2 bg-gray-200 border-0 dark:bg-gray-700" />
-                      <p
-                        className="text-sm text-gray-600 dark:text-gray-300 line-clamp-2 transition-all duration-200 ease-in-out group-hover:line-clamp-none group-hover:whitespace-normal"
-                        title={game.summary || "No summary available."}
-                      >
-                        Summary: {game.summary || "No summary available."}
-                      </p>
-                    </div>
-                  </div>
-                )
-            )}
-        </div>
+      {/* Masonry Grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-5">
+        {/* Initial Skeletons */}
+        {isLoading &&
+          games.length === 0 &&
+          distributeHorizontally(initialSkeletons, columnCount).map(
+            (column, colIndex) => (
+              <div
+                key={`init-skeleton-col-${colIndex}`}
+                className="flex flex-col gap-5"
+              >
+                {column.map((key) => (
+                  <ImageSkeletonContainer
+                    key={`init-skeleton-${colIndex}-${key}`}
+                  />
+                ))}
+              </div>
+            )
+          )}
 
-        <div className="flex flex-col max-w-1/4 gap-5">
-          {isLoading &&
-            skeletons.map((key) => <ImageSkeletonContainer key={key} />)}
-          {!isLoading &&
-            !error &&
-            games.map(
-              (game, index) =>
-                index > 4 &&
-                index < 9 && (
-                  <div
-                    key={index}
-                    className="bg-white dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-700 rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-shadow duration-300 group cursor-pointers max-h-fit hover:scale-[1.02]"
-                  >
-                    <div className="relative w-full h-48">
-                      <Image
-                        src={
-                          game.artwork ??
-                          "https://media.istockphoto.com/id/1409329028/vector/no-picture-available-placeholder-thumbnail-icon-illustration-design.jpg?s=612x612&w=0&k=20&c=_zOuJu755g2eEUioiOUdz_mHKJQJn-tDgIAhQzyeKUQ="
-                        }
-                        alt={game.name}
-                        className="w-full h-48 object-cover"
-                        width={400}
-                        height={192}
-                      />
-                    </div>
-                    <div className="p-4">
-                      <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-                        {game.name}
-                      </h3>
-                      <hr className="h-px my-2 bg-gray-200 border-0 dark:bg-gray-700" />
-                      <p className="text-sm text-gray-600 dark:text-gray-300">
-                        Genres: {game.genres.join(", ")}
-                      </p>
-                      <hr className="h-px my-2 bg-gray-200 border-0 dark:bg-gray-700" />
-                      <p className="text-sm text-gray-600 dark:text-gray-300">
-                        Platforms: {game.platforms.join(", ")}
-                      </p>
-                      <hr className="h-px my-2 bg-gray-200 border-0 dark:bg-gray-700" />
-                      <p className="text-sm text-gray-600 dark:text-gray-300">
-                        Rating: ⭐ {formatNumber(game.total_rating) || "N/A"}
-                      </p>
-                      <hr className="h-px my-2 bg-gray-200 border-0 dark:bg-gray-700" />
-                      <p className="text-sm text-gray-600 dark:text-gray-300">
-                        Release:{" "}
-                        {new Date(
-                          game.release_date * 1000
-                        ).toLocaleDateString()}
-                      </p>
-                      <hr className="h-px my-2 bg-gray-200 border-0 dark:bg-gray-700" />
-                      <p
-                        className="text-sm text-gray-600 dark:text-gray-300 line-clamp-2 transition-all duration-200 ease-in-out group-hover:line-clamp-none group-hover:whitespace-normal"
-                        title={game.summary || "No summary available."}
-                      >
-                        Summary: {game.summary || "No summary available."}
-                      </p>
-                    </div>
-                  </div>
-                )
-            )}
-        </div>
+        {/* Game Cards + Load More Skeletons */}
+        {!error &&
+          columns.map((column, colIndex) => (
+            <div key={`col-${colIndex}`} className="flex flex-col gap-5">
+              {column.map((game, index) => GameCard(index, game))}
 
-        <div className="flex flex-col max-w-1/4 gap-5">
-          {isLoading &&
-            skeletons.map((key) => <ImageSkeletonContainer key={key} />)}
-          {!isLoading &&
-            !error &&
-            games.map(
-              (game, index) =>
-                index > 8 &&
-                index < 13 && (
-                  <div
-                    key={index}
-                    className="bg-white dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-700 rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-shadow duration-300 group cursor-pointers max-h-fit hover:scale-[1.02] "
-                  >
-                    <div className="relative w-full h-48">
-                      <Image
-                        src={
-                          game.artwork ??
-                          "https://media.istockphoto.com/id/1409329028/vector/no-picture-available-placeholder-thumbnail-icon-illustration-design.jpg?s=612x612&w=0&k=20&c=_zOuJu755g2eEUioiOUdz_mHKJQJn-tDgIAhQzyeKUQ="
-                        }
-                        alt={game.name}
-                        className="w-full h-48 object-cover"
-                        width={400}
-                        height={192}
-                      />
-                    </div>
-                    <div className="p-4">
-                      <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-                        {game.name}
-                      </h3>
-                      <hr className="h-px my-2 bg-gray-200 border-0 dark:bg-gray-700" />
-                      <p className="text-sm text-gray-600 dark:text-gray-300">
-                        Genres: {game.genres.join(", ")}
-                      </p>
-                      <hr className="h-px my-2 bg-gray-200 border-0 dark:bg-gray-700" />
-                      <p className="text-sm text-gray-600 dark:text-gray-300">
-                        Platforms: {game.platforms.join(", ")}
-                      </p>
-                      <hr className="h-px my-2 bg-gray-200 border-0 dark:bg-gray-700" />
-                      <p className="text-sm text-gray-600 dark:text-gray-300">
-                        Rating: ⭐ {formatNumber(game.total_rating) || "N/A"}
-                      </p>
-                      <hr className="h-px my-2 bg-gray-200 border-0 dark:bg-gray-700" />
-                      <p className="text-sm text-gray-600 dark:text-gray-300">
-                        Release:{" "}
-                        {new Date(
-                          game.release_date * 1000
-                        ).toLocaleDateString()}
-                      </p>
-                      <hr className="h-px my-2 bg-gray-200 border-0 dark:bg-gray-700" />
-                      <p
-                        className="text-sm text-gray-600 dark:text-gray-300 line-clamp-2 transition-all duration-200 ease-in-out group-hover:line-clamp-none group-hover:whitespace-normal"
-                        title={game.summary || "No summary available."}
-                      >
-                        Summary: {game.summary || "No summary available."}
-                      </p>
-                    </div>
-                  </div>
-                )
-            )}
-        </div>
-
-        <div className="flex flex-col max-w-1/4 gap-5">
-          {isLoading &&
-            skeletons.map((key) => <ImageSkeletonContainer key={key} />)}
-          {!isLoading &&
-            !error &&
-            games.map(
-              (game, index) =>
-                index > 12 &&
-                index < 17 && (
-                  <div
-                    key={index}
-                    className="bg-white dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-700 rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-shadow duration-300 group cursor-pointers max-h-fit hover:scale-[1.02]"
-                  >
-                    <div className="relative w-full h-48">
-                      <Image
-                        src={
-                          game.artwork ??
-                          "https://media.istockphoto.com/id/1409329028/vector/no-picture-available-placeholder-thumbnail-icon-illustration-design.jpg?s=612x612&w=0&k=20&c=_zOuJu755g2eEUioiOUdz_mHKJQJn-tDgIAhQzyeKUQ="
-                        }
-                        alt={game.name}
-                        className="w-full h-48 object-cover"
-                        width={400}
-                        height={192}
-                      />
-                    </div>
-                    <div className="p-4">
-                      <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-                        {game.name}
-                      </h3>
-                      <hr className="h-px my-2 bg-gray-200 border-0 dark:bg-gray-700" />
-                      <p className="text-sm text-gray-600 dark:text-gray-300">
-                        Genres: {game.genres.join(", ")}
-                      </p>
-                      <hr className="h-px my-2 bg-gray-200 border-0 dark:bg-gray-700" />
-                      <p className="text-sm text-gray-600 dark:text-gray-300">
-                        Platforms: {game.platforms.join(", ")}
-                      </p>
-                      <hr className="h-px my-2 bg-gray-200 border-0 dark:bg-gray-700" />
-                      <p className="text-sm text-gray-600 dark:text-gray-300">
-                        Rating: ⭐ {formatNumber(game.total_rating) || "N/A"}
-                      </p>
-                      <hr className="h-px my-2 bg-gray-200 border-0 dark:bg-gray-700" />
-                      <p className="text-sm text-gray-600 dark:text-gray-300">
-                        Release:{" "}
-                        {new Date(
-                          game.release_date * 1000
-                        ).toLocaleDateString()}
-                      </p>
-                      <hr className="h-px my-2 bg-gray-200 border-0 dark:bg-gray-700" />
-                      <p
-                        className="text-sm text-gray-600 dark:text-gray-300 line-clamp-2 transition-all duration-200 ease-in-out group-hover:line-clamp-none group-hover:whitespace-normal"
-                        title={game.summary || "No summary available."}
-                      >
-                        Summary: {game.summary || "No summary available."}
-                      </p>
-                    </div>
-                  </div>
-                )
-            )}
-        </div>
-      </div> */}
-
-      <div className="flex flex-wrap justify-center w-full gap-5">
-        {!isLoading &&
-          !error &&
-          chunkedItems.length > 0 &&
-          chunkedItems.map((chunk, chunkIndex) => (
-            <div key={chunkIndex} className="flex flex-col w-[15.75%] gap-5">
-              {chunk.map((game, index) => (
-                <div
-                  key={index}
-                  className="bg-white dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-700 rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-shadow duration-300 group cursor-pointers max-h-fit hover:scale-[1.02]"
-                >
-                  <div className="relative w-full h-48">
-                    <Image
-                      src={
-                        game.artwork ??
-                        "https://media.istockphoto.com/id/1409329028/vector/no-picture-available-placeholder-thumbnail-icon-illustration-design.jpg?s=612x612&w=0&k=20&c=_zOuJu755g2eEUioiOUdz_mHKJQJn-tDgIAhQzyeKUQ="
-                      }
-                      alt={game.name}
-                      className="w-full h-48 object-cover"
-                      width={400}
-                      height={192}
-                    />
-                  </div>
-                  <div className="p-4">
-                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-                      {game.name}
-                    </h3>
-                    <hr className="h-px my-2 bg-gray-200 border-0 dark:bg-gray-700" />
-                    <p className="text-sm text-gray-600 dark:text-gray-300">
-                      Genres: {game.genres.join(", ")}
-                    </p>
-                    <hr className="h-px my-2 bg-gray-200 border-0 dark:bg-gray-700" />
-                    <p className="text-sm text-gray-600 dark:text-gray-300">
-                      Platforms: {game.platforms.join(", ")}
-                    </p>
-                    <hr className="h-px my-2 bg-gray-200 border-0 dark:bg-gray-700" />
-                    <p className="text-sm text-gray-600 dark:text-gray-300">
-                      Rating: ⭐ {formatNumber(game.total_rating) || "N/A"}
-                    </p>
-                    <hr className="h-px my-2 bg-gray-200 border-0 dark:bg-gray-700" />
-                    <p className="text-sm text-gray-600 dark:text-gray-300">
-                      Release:{" "}
-                      {new Date(game.release_date * 1000).toLocaleDateString()}
-                    </p>
-                    <hr className="h-px my-2 bg-gray-200 border-0 dark:bg-gray-700" />
-                    <p
-                      className="text-sm text-gray-600 dark:text-gray-300 line-clamp-2 transition-all duration-200 ease-in-out group-hover:line-clamp-none group-hover:whitespace-normal"
-                      title={game.summary || "No summary available."}
-                    >
-                      Summary: {game.summary || "No summary available."}
-                    </p>
-                  </div>
-                </div>
+              {/* Skeletons for batch being loaded */}
+              {loadingSkeletons[colIndex]?.map((_, i) => (
+                <ImageSkeletonContainer
+                  key={`loading-skeleton-${colIndex}-${i}`}
+                />
               ))}
             </div>
           ))}
       </div>
-      {!isLoading && !error && (
-        <LoadMoreButton onClick={handleLoadMore} loading={loadingMore} />
+
+      {/* Load More Button */}
+      {columns.length > 0 && !isLoading && !error && (
+        <div className="mt-8 flex justify-center">
+          <LoadMoreButton onClick={handleLoadMore} loading={loadingMore} />
+        </div>
       )}
     </main>
   );
