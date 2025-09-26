@@ -8,6 +8,7 @@ import SortSelector from "./SortSelector";
 import LoadMoreButton from "./LoadMoreButton";
 import { GameGrid as GameType } from "../hooks/useGameGrid";
 import GameCard from "./GameCard";
+import { useResponsiveColumns } from "../hooks/useResponsiveCoumns";
 
 interface Props {
   gameQuery: GameQuery;
@@ -19,6 +20,7 @@ const GameGrid = ({ gameQuery, setGameQuery }: Props) => {
   const [loadingMore, setLoadingMore] = useState(false);
 
   const { data: gridData, isLoading, error } = useGamesGrid(gameQuery);
+  const columnCount = useResponsiveColumns();
 
   useEffect(() => {
     if (gridData) {
@@ -49,7 +51,7 @@ const GameGrid = ({ gameQuery, setGameQuery }: Props) => {
     }));
   };
 
-  const columnCount = 5;
+  // const columnCount = 5;
 
   const distributeHorizontally = <T,>(
     items: T[] = [],
@@ -67,6 +69,8 @@ const GameGrid = ({ gameQuery, setGameQuery }: Props) => {
   const loadingSkeletons = loadingMore
     ? distributeHorizontally(Array.from({ length: 5 }), columnCount)
     : [];
+
+  console.log("Games: ", games);
 
   return (
     <main className="p-4 md:ml-64 h-auto pt-32 sm:pt-20 text-gray-500 dark:text-gray-400 bg-white dark:bg-gray-800 min-h-screen">
