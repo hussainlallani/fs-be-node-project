@@ -40,7 +40,7 @@ const NavBar = ({ searchText, onSearch }: NavBarProps) => {
   };
 
   return (
-    <nav className="bg-white border-b border-gray-200 dark:border-gray-800 dark:bg-gray-900 fixed top-0 left-0 right-0 z-50">
+    <nav className="bg-white dark:bg-gray-950 fixed top-0 left-0 right-0 z-50">
       <div className="w-full mx-auto flex flex-wrap items-center justify-between p-4">
         {/* Logo */}
         <a
@@ -62,7 +62,7 @@ const NavBar = ({ searchText, onSearch }: NavBarProps) => {
         {/* Right Section */}
         <div className="flex items-center space-x-3 rtl:space-x-reverse md:order-2 relative gap-2 sm:gap-4">
           {/* Search */}
-          <div className="flex items-center bg-gray-100 dark:bg-gray-700 rounded-full px-3 py-1 max-w-[190px] sm:max-w-[300px]">
+          <div className="flex items-center bg-gray-100 dark:bg-gray-800 rounded-full px-3 py-1 max-w-[190px] sm:max-w-[300px]">
             <svg
               className="w-5 h-5 text-gray-500 dark:text-gray-400"
               fill="currentColor"
@@ -108,7 +108,7 @@ const NavBar = ({ searchText, onSearch }: NavBarProps) => {
             <button
               type="button"
               onClick={() => setUserMenuOpen((prev) => !prev)}
-              className="flex items-center rounded-full bg-gray-800 focus:outline-none focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600 cursor-pointer"
+              className="flex items-center rounded-full bg-gray-900 focus:outline-none focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600 cursor-pointer"
               aria-label="User menu"
               aria-expanded={isUserMenuOpen}
             >
@@ -120,7 +120,7 @@ const NavBar = ({ searchText, onSearch }: NavBarProps) => {
             </button>
 
             {isUserMenuOpen && (
-              <div className="absolute top-12 right-0 z-50 w-48 bg-white divide-y divide-gray-100 rounded-lg shadow-sm dark:bg-gray-700 dark:divide-gray-600">
+              <div className="absolute top-12 right-0 z-50 w-48 bg-white divide-y divide-gray-100 rounded-lg shadow-sm dark:bg-gray-800 dark:divide-gray-600">
                 <div className="px-4 py-3">
                   <span className="block text-sm text-gray-900 dark:text-white">
                     Bonnie Green
@@ -177,7 +177,7 @@ const NavBar = ({ searchText, onSearch }: NavBarProps) => {
             isMobileMenuOpen ? "flex" : "hidden"
           } items-center justify-between w-full md:flex md:w-auto md:order-1`}
         >
-          <ul className="flex flex-col font-medium p-4 md:p-0 mt-4 border border-gray-100 rounded-lg bg-gray-50 md:space-x-8 rtl:space-x-reverse md:flex-row md:mt-0 md:border-0 md:bg-white dark:bg-gray-800 md:dark:bg-gray-900 dark:border-gray-700">
+          <ul className="flex flex-col font-medium p-4 md:p-0 mt-4 border border-gray-100 rounded-lg bg-gray-50 md:space-x-8 rtl:space-x-reverse md:flex-row md:mt-0 md:border-0 md:bg-white dark:bg-gray-950 md:dark:bg-gray-950 dark:border-gray-700">
             {["Home", "About", "Services", "Pricing", "Contact"].map(
               (label, idx) => (
                 <li key={label}>

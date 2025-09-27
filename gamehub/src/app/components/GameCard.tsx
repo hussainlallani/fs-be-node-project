@@ -10,7 +10,7 @@ export default function GameCard(
   return (
     <div
       key={index}
-      className="break-inside-avoid bg-white dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-700 rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-shadow duration-300 group  hover:dark:bg-gray-900 hover:bg-gray-50 cursor-pointer"
+      className="break-inside-avoid bg-white dark:bg-gray-900 border-2 border-gray-200 dark:border-gray-700 rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-shadow duration-300 group  hover:dark:bg-gray-950 hover:bg-gray-50 cursor-pointer"
     >
       <div className="relative w-full h-48">
         <Image
