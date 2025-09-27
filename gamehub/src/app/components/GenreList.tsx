@@ -5,6 +5,7 @@ import React from "react";
 import useGenres, { Genre } from "../hooks/useGenres";
 import getCroppedImageUrl from "../services/image-url";
 import ListSkeletonContainer from "./ListSkeletonContainer";
+import Image from "next/image";
 
 interface Props {
   onSelectGenre: (genre: Genre) => void;
@@ -31,13 +32,16 @@ const GenreList = ({ selectedGenre, onSelectGenre }: Props) => {
           ))}
         {data.map((genre) => (
           <li key={genre.id} className="flex items-center space-x-3">
-            <img
+            <Image
               src={
                 typeof getCroppedImageUrl(genre.image_background) === "string"
                   ? getCroppedImageUrl(genre.image_background)
                   : (getCroppedImageUrl(genre.image_background) as any).src
               }
               className="w-8 h-8 rounded object-cover"
+              width={32}
+              height={32}
+              alt={genre.name}
             />
             <button
               onClick={() => onSelectGenre(genre)}

@@ -112,10 +112,12 @@ const NavBar = ({ searchText, onSearch }: NavBarProps) => {
               aria-label="User menu"
               aria-expanded={isUserMenuOpen}
             >
-              <img
+              <Image
                 src="https://flowbite.com/docs/images/people/profile-picture-3.jpg"
                 alt="User"
                 className="min-w-8 h-8 rounded-full"
+                width={32}
+                height={32}
               />
             </button>
 

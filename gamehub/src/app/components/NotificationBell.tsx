@@ -1,5 +1,6 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
+import Image from "next/image";
 import { useState, useRef, useEffect } from "react";
 
 export default function NotificationBell() {
@@ -53,10 +54,12 @@ export default function NotificationBell() {
                 className="flex px-4 py-3 hover:bg-gray-100 dark:hover:bg-gray-700"
               >
                 <div className="shrink-0 relative">
-                  <img
+                  <Image
                     className="rounded-full w-11 h-11"
                     src={`https://flowbite.com/docs/images/people/profile-picture-${id}.jpg`}
                     alt={`User ${id}`}
+                    width={44}
+                    height={44}
                   />
                   <div className="absolute flex items-center justify-center w-5 h-5 ms-6 -mt-5 bg-blue-600 border border-white rounded-full dark:border-gray-800">
                     <svg

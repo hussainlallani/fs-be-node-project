@@ -13,6 +13,9 @@ const nextConfig: NextConfig = {
     domains: [
       "images.igdb.com",
       "media.istockphoto.com", // ✅ add this
+      "media.rawg.io",
+      "www.freetogame.com",
+      "flowbite.com",
     ],
     remotePatterns: [
       {
