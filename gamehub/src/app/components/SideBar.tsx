@@ -19,7 +19,13 @@ export interface GameQuery {
 const SideBar = ({ selectedGenre, onSelectGenre }: Props) => {
   return (
     <aside
-      className="fixed top-0 left-0 z-40 w-64 h-screen pt-14 transition-transform -translate-x-full bg-white border-r border-gray-200 md:translate-x-0 dark:bg-gray-800 dark:border-gray-700"
+      className="fixed top-0 left-0 z-40 w-64 h-screen pt-14 transition-transform -translate-x-full bg-white border-r border-gray-200 md:translate-x-0 dark:bg-gray-900 dark:border-gray-800 overflow-y-auto [&::-webkit-scrollbar]:w-0
+  [&::-webkit-scrollbar-track]:rounded-full
+  [&::-webkit-scrollbar-track]:bg-gray-700
+  [&::-webkit-scrollbar-thumb]:rounded-full
+  [&::-webkit-scrollbar-thumb]:bg-gray-700
+  dark:[&::-webkit-scrollbar-track]:bg-gray-700
+  dark:[&::-webkit-scrollbar-thumb]:bg-gray-700"
       aria-label="Sidenav"
       id="drawer-navigation"
     >

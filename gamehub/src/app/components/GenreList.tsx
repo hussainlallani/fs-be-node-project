@@ -19,7 +19,9 @@ const GenreList = ({ selectedGenre, onSelectGenre }: Props) => {
 
   return (
     <div className="mt-9 mb-3">
-      <h2 className="text-2xl font-semibold text-white mb-4">Genres</h2>
+      <h2 className="text-2xl font-semibold text-gray-600 dark:text-gray-300 mb-4">
+        Genres
+      </h2>
       <ul className="space-y-3">
         {isLoading &&
           skeletons.map((key) => (
@@ -39,10 +41,10 @@ const GenreList = ({ selectedGenre, onSelectGenre }: Props) => {
             />
             <button
               onClick={() => onSelectGenre(genre)}
-              className={`text-left text-md transition-colors hover:text-white cursor-pointer ${
+              className={`text-left text-md transition-colors hover:text-gray-950 hover:dark:text-gray-50 cursor-pointer ${
                 genre.id === selectedGenre?.id
-                  ? "font-bold text-white"
-                  : "font-normal text-gray-300"
+                  ? "font-bold text-gray-600 dark:text-gray-300"
+                  : "font-normal text-gray-600 dark:text-gray-300"
               }`}
             >
               {genre.name}

@@ -73,7 +73,7 @@ const GameGrid = ({ gameQuery, setGameQuery }: Props) => {
   console.log("Games: ", games);
 
   return (
-    <main className="p-4 md:ml-64 h-auto pt-23 text-gray-500 dark:text-gray-400 bg-white dark:bg-gray-800 min-h-screen">
+    <main className="p-4 md:ml-64 h-auto pt-23 text-gray-500 dark:text-gray-400 bg-white dark:bg-gray-950 min-h-screen">
       {/* Filters */}
       <div className="flex flex-row gap-4 mb-6">
         <div className="w-auto">

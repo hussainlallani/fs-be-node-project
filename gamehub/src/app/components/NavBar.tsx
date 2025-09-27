@@ -40,7 +40,7 @@ const NavBar = ({ searchText, onSearch }: NavBarProps) => {
   };
 
   return (
-    <nav className="bg-white border-gray-200 dark:bg-gray-900 fixed top-0 left-0 right-0 z-50">
+    <nav className="bg-white border-b border-gray-200 dark:border-gray-800 dark:bg-gray-900 fixed top-0 left-0 right-0 z-50">
       <div className="w-full mx-auto flex flex-wrap items-center justify-between p-4">
         {/* Logo */}
         <a
@@ -54,7 +54,7 @@ const NavBar = ({ searchText, onSearch }: NavBarProps) => {
             height={32}
             className="h-8 w-8"
           />
-          <span className="self-center text-2xl font-semibold whitespace-nowrap dark:text-white">
+          <span className="self-center text-2xl font-semibold whitespace-nowrap text-gray-600 dark:text-gray-300">
             GameHub
           </span>
         </a>
