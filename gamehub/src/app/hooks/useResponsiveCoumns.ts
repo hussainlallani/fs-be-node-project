@@ -2,7 +2,6 @@ import { useScreen } from "./useScreen";
 
 export function useResponsiveColumns() {
   const screen = useScreen();
-  console.log("Screen width: ", screen);
   const width = screen ?? 0;
 
   if (width >= 1280) return 5;

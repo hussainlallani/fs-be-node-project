@@ -1,29 +1,21 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useLayoutEffect, useState } from "react";
 import { FiSun, FiMoon } from "react-icons/fi";
 
 export default function ThemeToggle() {
-  const [dark, setDark] = useState(false);
+  const [dark, setDark] = useState(() => {
+    if (typeof window === "undefined") return false;
+    return localStorage.getItem("theme") === "dark";
+  });
 
-  // Load theme from localStorage on initial mount
-  useEffect(() => {
-    const storedTheme = localStorage.getItem("theme");
-    if (storedTheme === "dark") {
-      setDark(true);
-      document.documentElement.classList.add("dark");
-    } else {
-      setDark(false);
-      document.documentElement.classList.remove("dark");
-    }
-  }, []);
-
-  // Update theme and persist to localStorage
-  useEffect(() => {
+  // Apply theme immediately before paint
+  useLayoutEffect(() => {
+    const root = document.documentElement;
     if (dark) {
-      document.documentElement.classList.add("dark");
+      root.classList.add("dark");
       localStorage.setItem("theme", "dark");
     } else {
-      document.documentElement.classList.remove("dark");
+      root.classList.remove("dark");
       localStorage.setItem("theme", "light");
     }
   }, [dark]);
