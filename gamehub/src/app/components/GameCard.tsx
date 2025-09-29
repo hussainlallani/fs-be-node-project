@@ -44,9 +44,9 @@ export default function GameCard(
         <hr className="h-px bg-gray-200 border-0 dark:bg-gray-700 mx-2 border-x-1 border-gray-200 dark:border-gray-700 transition-colors duration-300 ease-in-out" />
 
         {/* Summary */}
-        <div className="relative h-16 rounded-b-lg border-b-1 group-hover:border-b-0 border-gray-200 dark:border-gray-600 transition-all duration-300 ease-in-out flex flex-col">
+        <div className="relative h-16 rounded-b-lg border-b-1 group-hover:border-b-0 border-gray-200 dark:border-gray-700 transition-all duration-300 ease-in-out flex flex-col">
           <div
-            className="text-sm text-gray-600 dark:text-gray-300 group-hover:line-clamp-none absolute left-0 w-full bg-white dark:bg-gray-900 group-hover:bg-gray-50 group-hover:dark:bg-gray-950 p-3 pb-0 mb-3 group-hover:pb-3 group-hover:m-0 z-10 border-x-1 border-gray-200 dark:border-gray-700 line-clamp-2 group-hover:rounded-b-lg group-hover:border-b-1 transition-all duration-300 ease-in-out"
+            className="text-sm text-gray-600 dark:text-gray-300 group-hover:line-clamp-none absolute left-0 w-full bg-white dark:bg-gray-900 group-hover:bg-gray-50 group-hover:dark:bg-gray-950 p-3 pb-0 mb-3 group-hover:pb-3 group-hover:m-0 z-10 border-x-1 border-gray-200 dark:border-gray-700 line-clamp-2 group-hover:rounded-b-lg group-hover:border-b-0 transition-all duration-300 ease-in-out"
             title={game.summary || "No summary available."}
           >
             Summary: {game.summary || "No summary available."}
