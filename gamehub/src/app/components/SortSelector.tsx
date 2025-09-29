@@ -52,7 +52,7 @@ const SortSelector = ({ selectedSort, onSelectSort }: Props) => {
       <button
         id="dropdownDefaultButton"
         onClick={() => setOpen(!open)}
-        className="inline-flex justify-between items-center w-full px-4 py-2 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 border-2 border-gray-300 dark:border-gray-700 text-sm font-medium rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring focus:ring-offset no-underline"
+        className="inline-flex justify-between items-center w-full px-4 py-2 bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-200 border-2 border-gray-300 dark:border-gray-700 text-sm font-medium rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring focus:ring-offset no-underline"
         type="button"
       >
         <span>{getLabel()}</span>
