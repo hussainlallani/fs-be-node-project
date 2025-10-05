@@ -69,7 +69,7 @@ export default function GameCard({
           <div
             className={`text-sm text-gray-600 dark:text-gray-300 
     bg-white dark:bg-gray-900 
-    p-3 pb-0 z-10 break-words border-x border-gray-200 dark:border-gray-700 
+    p-3 pb-0 z-10 break-words border-x-1 border-gray-200 dark:border-gray-700 
     transition-all duration-300 ease-in-out 
     absolute left-0 w-full 
     line-clamp-2 group-hover:line-clamp-none 
@@ -78,7 +78,7 @@ export default function GameCard({
     ${
       cardExpanded
         ? "line-clamp-none pb-2 bg-gray-50 dark:bg-gray-950 rounded-b-lg border-0"
-        : ""
+        : "line-clamp-2 pb-0 bg-white dark dark:bg-gray-900 border-x-1"
     }`}
             title={game.summary || "No summary available."}
           >

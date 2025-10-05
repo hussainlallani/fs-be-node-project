@@ -15,6 +15,17 @@ interface Props {
   setGameQuery: React.Dispatch<React.SetStateAction<GameQuery>>;
 }
 
+const columnClassMap: Record<number, string> = {
+  1: "grid-cols-1",
+  2: "grid-cols-2",
+  3: "grid-cols-3",
+  4: "grid-cols-4",
+  5: "grid-cols-5",
+  6: "grid-cols-6",
+  7: "grid-cols-7",
+  8: "grid-cols-8",
+};
+
 const GameGrid = ({ gameQuery, setGameQuery }: Props) => {
   const [games, setGames] = useState<GameType[]>([]);
   const [loadingMore, setLoadingMore] = useState(false);
@@ -24,6 +35,7 @@ const GameGrid = ({ gameQuery, setGameQuery }: Props) => {
 
   const { data: gridData, isLoading, error } = useGamesGrid(gameQuery);
   const columnCount = useResponsiveColumns();
+  console.log(columnCount);
 
   useEffect(() => {
     if (gridData) {
@@ -101,7 +113,10 @@ const GameGrid = ({ gameQuery, setGameQuery }: Props) => {
       <GameHeading gameQuery={gameQuery} />
 
       {/* Masonry Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-5">
+      {/* <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-5"> */}
+      <div
+        className={`grid ${columnClassMap[columnCount] || "grid-cols-1"} gap-5`}
+      >
         {/* Initial Skeletons */}
         {isLoading &&
           games.length === 0 &&

@@ -19,7 +19,7 @@ export default function CardMetaBlock({
 }: CardMetaBlockProps) {
   return (
     <div
-      className={`border-x-1 border-gray-200 dark:border-gray-700 ${className}`}
+      className={`border-x-0.5 border-gray-200 dark:border-gray-700 ${className}`}
     >
       {items.map((item, index) => (
         <React.Fragment key={item.label}>
