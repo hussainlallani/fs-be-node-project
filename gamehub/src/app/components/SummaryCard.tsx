@@ -7,14 +7,14 @@ interface SummaryCardProps {
   summary?: string;
   expanded: boolean;
   index: number;
-  setExpanded: (index: number | null) => void;
+  setCardExpanded: (index: number | null) => void;
 }
 
 export default function SummaryCard({
   summary,
   expanded,
   index,
-  setExpanded,
+  setCardExpanded,
 }: SummaryCardProps) {
   return (
     <div className="relative h-12 md:h-16 md:border-b border-b-0 rounded-b-lg group-hover:border-b-0 border-gray-200 dark:border-gray-700 transition-all duration-300 ease-in-out flex flex-col">
@@ -31,7 +31,7 @@ export default function SummaryCard({
           <ViewMoreButton
             index={index}
             cardExpanded={expanded}
-            setCardExpanded={setExpanded}
+            setCardExpanded={setCardExpanded}
           />
         </div>
       </div>

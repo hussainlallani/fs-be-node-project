@@ -4,7 +4,6 @@ import formatNumber from "../lib/format-number";
 import { GameGrid as GameType } from "../hooks/useGameGrid";
 import ViewMoreButton from "./ViewMoreButton";
 import Heading from "./atoms/Heading";
-import CardMetaRow from "./molecules/CardMetaRow";
 import CardMetaBlock from "./organisms/CardMetaBlock";
 import Hr from "./atoms/Hr";
 
