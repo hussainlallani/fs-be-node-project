@@ -18,6 +18,9 @@ interface Props {
 const GameGrid = ({ gameQuery, setGameQuery }: Props) => {
   const [games, setGames] = useState<GameType[]>([]);
   const [loadingMore, setLoadingMore] = useState(false);
+  const [cardExpandedIndex, setCardExpandedIndex] = useState<number | null>(
+    null
+  );
 
   const { data: gridData, isLoading, error } = useGamesGrid(gameQuery);
   const columnCount = useResponsiveColumns();
@@ -65,7 +68,7 @@ const GameGrid = ({ gameQuery, setGameQuery }: Props) => {
   };
 
   const columns = distributeHorizontally(games, columnCount);
-  const initialSkeletons = Array.from({ length: 12 }, (_, i) => i);
+  const initialSkeletons = Array.from({ length: columnCount * 2 }, (_, i) => i);
   const loadingSkeletons = loadingMore
     ? distributeHorizontally(Array.from({ length: 5 }), columnCount)
     : [];
@@ -121,7 +124,19 @@ const GameGrid = ({ gameQuery, setGameQuery }: Props) => {
         {!error &&
           columns.map((column, colIndex) => (
             <div key={`col-${colIndex}`} className="flex flex-col gap-5">
-              {column.map((game, index) => GameCard(index, game))}
+              {column.map((game, index) => (
+                <GameCard
+                  key={index}
+                  index={index}
+                  game={game}
+                  cardExpanded={cardExpandedIndex === index}
+                  setCardExpanded={() =>
+                    setCardExpandedIndex((prev) =>
+                      prev === index ? null : index
+                    )
+                  }
+                />
+              ))}
 
               {/* Skeletons for batch being loaded */}
               {loadingSkeletons[colIndex]?.map((_, i) => (

@@ -2,13 +2,29 @@
 import Image from "next/image";
 import formatNumber from "../lib/format-number";
 import { GameGrid as GameType } from "../hooks/useGameGrid";
+import ViewMoreButton from "./ViewMoreButton";
 
-export default function GameCard(
-  index: number,
-  game: GameType
-): React.JSX.Element {
+interface GameCardProps {
+  index: number;
+  game: GameType;
+  cardExpanded: boolean;
+  setCardExpanded: (value: number | null) => void;
+}
+
+export default function GameCard({
+  index,
+  game,
+  cardExpanded,
+  setCardExpanded,
+}: GameCardProps): React.JSX.Element {
   return (
-    <div className="relative break-inside-avoid bg-white dark:bg-gray-900 shadow-md rounded-lg hover:shadow-xl transition-shadow duration-300 group hover:dark:bg-gray-950 group-hover:dark:bg-gray-950 hover:bg-gray-50 cursor-pointer overflow-visible">
+    <article
+      className={`relative break-inside-avoid bg-white dark:bg-gray-900 shadow-md rounded-lg 
+    transition-shadow duration-300 cursor-pointer overflow-visible 
+    hover:shadow-xl hover:bg-gray-50 hover:dark:bg-gray-950 
+    group group-hover:dark:bg-gray-950 
+    ${cardExpanded ? "shadow-xl bg-gray-50 dark:bg-gray-950" : ""}`}
+    >
       <div className="w-full h-48">
         <Image
           src={
@@ -21,7 +37,7 @@ export default function GameCard(
           height={192}
         />
       </div>
-      <div className="rounded-b-lg">
+      <header className="rounded-b-lg">
         <h3 className="text-lg font-semibold text-gray-900 dark:text-white p-3 border-x-1 border-gray-200 dark:border-gray-700 transition-colors duration-300 ease-in-out">
           {game.name}
         </h3>
@@ -44,15 +60,42 @@ export default function GameCard(
         <hr className="h-px bg-gray-200 border-0 dark:bg-gray-700 mx-2 border-x-1 border-gray-200 dark:border-gray-700 transition-colors duration-300 ease-in-out" />
 
         {/* Summary */}
-        <div className="relative h-16 rounded-b-lg border-b-1 group-hover:border-b-0 border-gray-200 dark:border-gray-700 transition-all duration-300 ease-in-out flex flex-col">
+        <div className="relative h-12 md:h-16 md:border-b-1 rounded-b-lg border-b-0 group-hover:border-b-0 border-gray-200 dark:border-gray-700 transition-all duration-300 ease-in-out flex flex-col">
           <div
-            className="text-sm text-gray-600 dark:text-gray-300 group-hover:line-clamp-none absolute left-0 w-full bg-white dark:bg-gray-900 group-hover:bg-gray-50 group-hover:dark:bg-gray-950 p-3 pb-0 mb-3 group-hover:pb-3 group-hover:m-0 z-10 border-x-1 border-gray-200 dark:border-gray-700 line-clamp-2 group-hover:rounded-b-lg group-hover:border-b-0 transition-all duration-300 ease-in-out"
+            className={`text-sm text-gray-600 dark:text-gray-300 
+    bg-white dark:bg-gray-900 
+    p-3 pb-0 z-10 break-words border-x border-gray-200 dark:border-gray-700 
+    transition-all duration-300 ease-in-out 
+    absolute left-0 w-full 
+    line-clamp-2 group-hover:line-clamp-none 
+    group-hover:pb-3 group-hover:bg-gray-50 group-hover:dark:bg-gray-950 
+    group-hover:rounded-b-lg group-hover:border-b-0
+    ${
+      cardExpanded
+        ? "line-clamp-none pb-2 bg-gray-50 dark:bg-gray-950 rounded-b-lg border-0"
+        : ""
+    }`}
             title={game.summary || "No summary available."}
           >
             Summary: {game.summary || "No summary available."}
+            {/* View more button */}
+            <div className="block md:hidden">
+              <ViewMoreButton
+                index={index}
+                cardExpanded={cardExpanded}
+                setCardExpanded={setCardExpanded}
+              />
+            </div>
           </div>
         </div>
+      </header>
+      <div className="block md:hidden">
+        <ViewMoreButton
+          index={index}
+          cardExpanded={cardExpanded}
+          setCardExpanded={setCardExpanded}
+        />
       </div>
-    </div>
+    </article>
   );
 }
