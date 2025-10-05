@@ -87,7 +87,9 @@ export default function GameCard({
     line-clamp-2 group-hover:line-clamp-none 
     group-hover:pb-3 group-hover:bg-gray-50 group-hover:dark:bg-gray-950 
     group-hover:rounded-b-lg group-hover:border-b-0 ${
-      cardExpanded ? "line-clamp-none" : ""
+      cardExpanded
+        ? "line-clamp-none pb-3 bg-gray-50 dark:bg-gray-950 rounded-b-lg border-b-0"
+        : ""
     }
    `}
             title={game.summary || "No summary available."}
