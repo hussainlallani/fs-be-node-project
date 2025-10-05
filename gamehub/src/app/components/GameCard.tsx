@@ -76,7 +76,7 @@ export default function GameCard({
     group-hover:pb-3 group-hover:bg-gray-50 group-hover:dark:bg-gray-950 
     group-hover:rounded-b-lg group-hover:border-b-0
     ${
-      cardExpanded
+      cardExpanded !== null
         ? "line-clamp-none pb-2 bg-gray-50 dark:bg-gray-950 rounded-b-lg border-0"
         : "line-clamp-2 pb-0 bg-white dark dark:bg-gray-900 border-x-1"
     }`}
