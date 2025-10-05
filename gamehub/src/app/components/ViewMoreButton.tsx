@@ -24,7 +24,7 @@ export default function ViewMoreButton({
           e.stopPropagation(); // ✅ Prevents bubbling to card
           setCardExpanded(cardExpanded ? null : index); // ✅ Toggle logic
         }}
-        className="cursor-pointer focus:outline-none"
+        className="cursor-pointer focus:outline-none pointer-events-auto"
       >
         {cardExpanded ? "View less" : "View more"}
       </button>
