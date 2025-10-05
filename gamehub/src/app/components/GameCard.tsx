@@ -1,5 +1,4 @@
 // components/GameCard.tsx
-"use client";
 import Image from "next/image";
 import formatNumber from "../lib/format-number";
 import { GameGrid as GameType } from "../hooks/useGameGrid";
@@ -27,11 +26,7 @@ export default function GameCard({
     transition-shadow duration-300 cursor-pointer overflow-visible 
     hover:shadow-xl hover:bg-gray-50 hover:dark:bg-gray-950 
     group group-hover:dark:bg-gray-950 
-    ${
-      Boolean(cardExpanded)
-        ? "shadow-xl bg-gray-50 dark:bg-gray-950"
-        : "bg-red-600"
-    }`}
+    ${cardExpanded ? "shadow-xl bg-gray-50 dark:bg-gray-950" : ""}`}
     >
       <div className="w-full h-48">
         <Image
@@ -50,10 +45,7 @@ export default function GameCard({
           level={3}
           className="text-lg font-semibold text-gray-900 dark:text-white p-3 border-x-1 border-gray-200 dark:border-gray-700 transition-colors duration-300 ease-in-out"
         >
-          {game.name}:{" "}
-          <span className="text-red-500">
-            {cardExpanded ? cardExpanded.toString() : "NULL"}
-          </span>
+          {game.name}
         </Heading>
         <Hr />
         <CardMetaBlock
@@ -73,25 +65,21 @@ export default function GameCard({
         <Hr />
 
         {/* Summary */}
-        <div
-          className={`relative h-12 md:h-16 md:border-b-1 rounded-b-lg border-b-0 group-hover:border-b-0 border-gray-200 dark:border-gray-700 transition-all duration-300 ease-in-out flex flex-col ${
-            cardExpanded ? "bg-red-600" : "block"
-          }`}
-        >
+        <div className="relative h-12 md:h-16 md:border-b-1 rounded-b-lg border-b-0 group-hover:border-b-0 border-gray-200 dark:border-gray-700 transition-all duration-300 ease-in-out flex flex-col">
           <div
             className={`text-sm text-gray-600 dark:text-gray-300 
     bg-white dark:bg-gray-900 
-    p-3 pb-0 z-10 break-words border-x-1 border-gray-200 dark:border-gray-700 
+    p-3 pb-0 z-10 break-words border-x border-gray-200 dark:border-gray-700 
     transition-all duration-300 ease-in-out 
     absolute left-0 w-full 
     line-clamp-2 group-hover:line-clamp-none 
     group-hover:pb-3 group-hover:bg-gray-50 group-hover:dark:bg-gray-950 
-    group-hover:rounded-b-lg group-hover:border-b-0 ${
+    group-hover:rounded-b-lg group-hover:border-b-0
+    ${
       cardExpanded
-        ? "line-clamp-none pb-3 bg-gray-50 dark:bg-gray-950 rounded-b-lg border-b-0"
+        ? "line-clamp-none pb-2 bg-gray-50 dark:bg-gray-950 rounded-b-lg border-0"
         : ""
-    }
-   `}
+    }`}
             title={game.summary || "No summary available."}
           >
             Summary: {game.summary || "No summary available."}
