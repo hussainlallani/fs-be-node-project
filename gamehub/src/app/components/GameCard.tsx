@@ -3,6 +3,10 @@ import Image from "next/image";
 import formatNumber from "../lib/format-number";
 import { GameGrid as GameType } from "../hooks/useGameGrid";
 import ViewMoreButton from "./ViewMoreButton";
+import Heading from "./atoms/Heading";
+import CardMetaRow from "./molecules/CardMetaRow";
+import CardMetaBlock from "./organisms/CardMetaBlock";
+import Hr from "./atoms/Hr";
 
 interface GameCardProps {
   index: number;
@@ -38,26 +42,28 @@ export default function GameCard({
         />
       </div>
       <header className="rounded-b-lg">
-        <h3 className="text-lg font-semibold text-gray-900 dark:text-white p-3 border-x-1 border-gray-200 dark:border-gray-700 transition-colors duration-300 ease-in-out">
+        <Heading
+          level={3}
+          className="text-lg font-semibold text-gray-900 dark:text-white p-3 border-x-1 border-gray-200 dark:border-gray-700 transition-colors duration-300 ease-in-out"
+        >
           {game.name}
-        </h3>
-        <hr className="h-px bg-gray-200 border-0 dark:bg-gray-700 mx-2 border-x-1 border-gray-200 dark:border-gray-700 transition-colors duration-300 ease-in-out" />
-        <p className="text-sm text-gray-600 dark:text-gray-300 p-3 border-x-1 border-gray-200 dark:border-gray-700 transition-colors duration-300 ease-in-out">
-          Genres: {game.genres.join(", ")}
-        </p>
-        <hr className="h-px bg-gray-200 border-0 dark:bg-gray-700 mx-2 border-x-1 border-gray-200 dark:border-gray-700 transition-colors duration-300 ease-in-out" />
-        <p className="text-sm text-gray-600 dark:text-gray-300 p-3 border-x-1 border-gray-200 dark:border-gray-700 transition-colors duration-300 ease-in-out">
-          Platforms: {game.platforms.join(", ")}
-        </p>
-        <hr className="h-px bg-gray-200 border-0 dark:bg-gray-700 mx-2 border-x-1 border-gray-200 dark:border-gray-700 transition-colors duration-300 ease-in-out" />
-        <p className="text-sm text-gray-600 dark:text-gray-300 p-3 border-x-1 border-gray-200 dark:border-gray-700 transition-colors duration-300 ease-in-out">
-          Rating: ⭐ {formatNumber(game.total_rating) || "N/A"}
-        </p>
-        <hr className="h-px bg-gray-200 border-0 dark:bg-gray-700 mx-2 border-x-1 border-gray-200 dark:border-gray-700 transition-colors duration-300 ease-in-out" />
-        <p className="text-sm text-gray-600 dark:text-gray-300 p-3 border-x-1 border-gray-200 dark:border-gray-700 transition-colors duration-300 ease-in-out">
-          Release: {new Date(game.release_date * 1000).toLocaleDateString()}
-        </p>
-        <hr className="h-px bg-gray-200 border-0 dark:bg-gray-700 mx-2 border-x-1 border-gray-200 dark:border-gray-700 transition-colors duration-300 ease-in-out" />
+        </Heading>
+        <Hr />
+        <CardMetaBlock
+          items={[
+            { label: "Genres", value: game.genres.join(", ") },
+            { label: "Platforms", value: game.platforms.join(", ") },
+            {
+              label: "Rating",
+              value: `⭐ ${formatNumber(game.total_rating) || "N/A"}`,
+            },
+            {
+              label: "Release",
+              value: new Date(game.release_date * 1000).toLocaleDateString(),
+            },
+          ]}
+        />
+        <Hr />
 
         {/* Summary */}
         <div className="relative h-12 md:h-16 md:border-b-1 rounded-b-lg border-b-0 group-hover:border-b-0 border-gray-200 dark:border-gray-700 transition-all duration-300 ease-in-out flex flex-col">

@@ -3,7 +3,7 @@
 interface ViewMoreButtonProps {
   index: number;
   cardExpanded: boolean;
-  setCardExpanded: (value: number | null) => void;
+  setCardExpanded: (index: number | null) => void;
 }
 
 export default function ViewMoreButton({
