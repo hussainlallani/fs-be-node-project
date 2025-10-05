@@ -79,17 +79,39 @@ export default function GameCard({
         <Hr />
 
         {/* Summary */}
-        <div
+        {/* <div
           className={`relative h-12 md:h-16 md:border-b-1 rounded-b-lg border-b-0 group-hover:border-b-0 border-gray-200 dark:border-gray-700 transition-all duration-300 ease-in-out flex flex-col ${clsx(
             cardExpanded ? "bg-red-600" : "block"
           )}`}
+        > */}
+        <div
+          className={clsx(
+            "relative overflow-hidden transition-all duration-300 ease-in-out rounded-b-lg border-b-0 border-gray-200 dark:border-gray-700 flex flex-col",
+            cardExpanded ? "h-auto" : "h-12 md:h-16"
+          )}
         >
-          <div
+          {/* <div
             className={`text-sm text-gray-600 dark:text-gray-300 
     bg-white dark:bg-gray-900 
     p-3 pb-0 z-10 break-words border-x-1 border-gray-200 dark:border-gray-700 
     transition-all duration-300 ease-in-out 
     absolute left-0 w-full 
+    line-clamp-2 group-hover:line-clamp-none 
+    group-hover:pb-3 group-hover:bg-gray-50 group-hover:dark:bg-gray-950 
+    group-hover:rounded-b-lg group-hover:border-b-0 ${clsx(
+      cardExpanded
+        ? "line-clamp-none pb-3 bg-gray-50 dark:bg-gray-950 rounded-b-lg border-b-0"
+        : ""
+    )}
+   `}
+            title={game.summary || "No summary available."}
+          > */}
+          <div
+            className={`text-sm text-gray-600 dark:text-gray-300 
+    bg-white dark:bg-gray-900 
+    p-3 pb-0 z-10 break-words border-x-1 border-gray-200 dark:border-gray-700 
+    transition-all duration-300 ease-in-out 
+    w-full 
     line-clamp-2 group-hover:line-clamp-none 
     group-hover:pb-3 group-hover:bg-gray-50 group-hover:dark:bg-gray-950 
     group-hover:rounded-b-lg group-hover:border-b-0 ${clsx(
