@@ -26,7 +26,11 @@ export default function GameCard({
     transition-shadow duration-300 cursor-pointer overflow-visible 
     hover:shadow-xl hover:bg-gray-50 hover:dark:bg-gray-950 
     group group-hover:dark:bg-gray-950 
-    ${cardExpanded ? "shadow-xl bg-gray-50 dark:bg-gray-950" : "bg-red-600"}`}
+    ${
+      Boolean(cardExpanded)
+        ? "shadow-xl bg-gray-50 dark:bg-gray-950"
+        : "bg-red-600"
+    }`}
     >
       <div className="w-full h-48">
         <Image
@@ -45,7 +49,10 @@ export default function GameCard({
           level={3}
           className="text-lg font-semibold text-gray-900 dark:text-white p-3 border-x-1 border-gray-200 dark:border-gray-700 transition-colors duration-300 ease-in-out"
         >
-          {game.name}
+          {game.name}:{" "}
+          <span className="text-red-500">
+            {cardExpanded ? cardExpanded.toString() : "NULL"}
+          </span>
         </Heading>
         <Hr />
         <CardMetaBlock
@@ -76,9 +83,9 @@ export default function GameCard({
     group-hover:pb-3 group-hover:bg-gray-50 group-hover:dark:bg-gray-950 
     group-hover:rounded-b-lg group-hover:border-b-0
     ${
-      cardExpanded
+      Boolean(cardExpanded)
         ? "line-clamp-none pb-2 bg-gray-50 dark:bg-gray-950 rounded-b-lg border-0"
-        : ""
+        : "bg-red-600"
     }`}
             title={game.summary || "No summary available."}
           >
