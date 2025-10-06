@@ -18,7 +18,7 @@ export default function NavBar({ searchText, onSearch }: NavBarProps) {
   const [isMobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
-    <nav className="bg-white dark:bg-gray-950 fixed top-0 left-0 right-0 z-50">
+    <nav className="bg-white dark:bg-gray-950 fixed top-0 left-0 right-0 z-100">
       <div className="w-full mx-auto flex flex-wrap items-center justify-between p-4">
         {/* Logo */}
         <Logo />
