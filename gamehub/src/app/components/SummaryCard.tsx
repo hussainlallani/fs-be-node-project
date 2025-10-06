@@ -32,6 +32,7 @@ export default function SummaryCard({
             index={index}
             cardExpanded={expanded}
             setCardExpanded={setCardExpanded}
+            className=""
           />
         </div>
       </div>

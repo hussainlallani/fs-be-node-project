@@ -22,13 +22,10 @@ export default function GameCard({
 }: GameCardProps): React.JSX.Element {
   return (
     <article
-      className={`relative break-inside-avoid bg-white dark:bg-gray-900 shadow-md rounded-lg 
-    transition-shadow duration-300 cursor-pointer overflow-visible 
-    hover:shadow-xl hover:bg-gray-50 hover:dark:bg-gray-950 
-    group group-hover:dark:bg-gray-950 
-    ${cardExpanded ? "shadow-xl bg-gray-50 dark:bg-gray-950" : ""}`}
+      className={`relative break-inside-avoid shadow-md rounded-lg 
+    transition-all duration-300 ease-in-out cursor-pointer overflow-visible`}
     >
-      <div className="w-full h-48">
+      <div className="w-full h-48 z-0">
         <Image
           src={
             game.artwork ??
@@ -40,12 +37,24 @@ export default function GameCard({
           height={192}
         />
       </div>
-      <header className="rounded-b-lg">
+      <header
+        onMouseEnter={() => {
+          setCardExpanded(index);
+        }}
+        onMouseLeave={() => setCardExpanded(index)}
+        className={`rounded-b-lg border-b-1 border-gray-200 dark:border-gray-700 transition-colors duration-300 ease-in-out
+    ${
+      cardExpanded
+        ? "bg-gray-50 dark:bg-gray-950"
+        : "bg-white dark:bg-gray-900 "
+    }
+    `}
+      >
         <Heading
-          level={3}
-          className="text-lg font-semibold text-gray-900 dark:text-white p-3 border-x-1 border-gray-200 dark:border-gray-700 transition-colors duration-300 ease-in-out"
+          level={5}
+          className="font-semibold text-gray-900 dark:text-white p-3 border-x-1 border-gray-200 dark:border-gray-700 transition-colors duration-300 ease-in-out "
         >
-          {game.name}
+          {game.name}: {index}
         </Heading>
         <Hr />
         <CardMetaBlock
@@ -65,40 +74,42 @@ export default function GameCard({
         <Hr />
 
         {/* Summary */}
-        <div className="relative h-12 md:h-16 md:border-b-1 rounded-b-lg border-b-0 group-hover:border-b-0 border-gray-200 dark:border-gray-700 transition-all duration-300 ease-in-out flex flex-col">
+        <div
+          className={`relative h-12 md:h-16 md:mb-2 border-x border-gray-200 dark:border-gray-700 transition-all duration-300 ease-in-out flex flex-col z-50`}
+        >
           <div
-            className={`text-sm text-gray-600 dark:text-gray-300 
-    bg-white dark:bg-gray-900 
-    p-3 pb-0 z-10 break-words border-x border-gray-200 dark:border-gray-700 
-    transition-all duration-300 ease-in-out 
-    absolute left-0 w-full 
-    line-clamp-2 group-hover:line-clamp-none 
-    group-hover:pb-3 group-hover:bg-gray-50 group-hover:dark:bg-gray-950 
-    group-hover:rounded-b-lg group-hover:border-b-0
-    ${
-      cardExpanded
-        ? "line-clamp-none pb-2 bg-gray-50 dark:bg-gray-950 rounded-b-lg border-0"
-        : ""
-    }`}
+            className={`text-md text-gray-600 dark:text-gray-300 border-gray-200 dark:border-gray-700 ${
+              cardExpanded
+                ? "bg-gray-50 dark:bg-gray-950 break-all p-3 z-50 transition-all duration-300 ease-in-out"
+                : "bg-white dark:bg-gray-900 break-all line-clamp-2 p-3 min-h-14 z-50 transition-all duration-300 ease-in-out"
+            } `}
             title={game.summary || "No summary available."}
           >
             Summary: {game.summary || "No summary available."}
             {/* View more button */}
-            <div className="block md:hidden">
+            <div className="block pt-1 md:hidden">
               <ViewMoreButton
                 index={index}
                 cardExpanded={cardExpanded}
                 setCardExpanded={setCardExpanded}
+                className=""
               />
             </div>
           </div>
         </div>
       </header>
-      <div className="block md:hidden">
+      <div
+        className={`block pt-4 pb-2 rounded-b-lg border-1 border-gray-200 dark:border-gray-700 md:hidden ${
+          cardExpanded
+            ? "bg-gray-50 dark:bg-gray-950"
+            : "bg-white dark:bg-gray-900"
+        }`}
+      >
         <ViewMoreButton
           index={index}
           cardExpanded={cardExpanded}
           setCardExpanded={setCardExpanded}
+          className=""
         />
       </div>
     </article>

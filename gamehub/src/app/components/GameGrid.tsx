@@ -113,7 +113,6 @@ const GameGrid = ({ gameQuery, setGameQuery }: Props) => {
       <GameHeading gameQuery={gameQuery} />
 
       {/* Masonry Grid */}
-      {/* <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-5"> */}
       <div
         className={`grid ${columnClassMap[columnCount] || "grid-cols-1"} gap-5`}
       >
@@ -139,19 +138,22 @@ const GameGrid = ({ gameQuery, setGameQuery }: Props) => {
         {!error &&
           columns.map((column, colIndex) => (
             <div key={`col-${colIndex}`} className="flex flex-col gap-5">
-              {column.map((game, index) => (
-                <GameCard
-                  key={index}
-                  index={index}
-                  game={game}
-                  cardExpanded={cardExpandedIndex === index}
-                  setCardExpanded={() =>
-                    setCardExpandedIndex((prev) =>
-                      prev === index ? null : index
-                    )
-                  }
-                />
-              ))}
+              {column.map((game, localIndex) => {
+                const globalIndex = colIndex + localIndex * columnCount;
+                return (
+                  <GameCard
+                    key={globalIndex}
+                    index={globalIndex}
+                    game={game}
+                    cardExpanded={cardExpandedIndex === globalIndex}
+                    setCardExpanded={() =>
+                      setCardExpandedIndex((prev) =>
+                        prev === globalIndex ? null : globalIndex
+                      )
+                    }
+                  />
+                );
+              })}
 
               {/* Skeletons for batch being loaded */}
               {loadingSkeletons[colIndex]?.map((_, i) => (
