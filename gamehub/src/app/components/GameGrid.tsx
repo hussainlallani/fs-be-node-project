@@ -82,7 +82,10 @@ const GameGrid = ({ gameQuery, setGameQuery }: Props) => {
   const columns = distributeHorizontally(games, columnCount);
   const initialSkeletons = Array.from({ length: columnCount * 2 }, (_, i) => i);
   const loadingSkeletons = loadingMore
-    ? distributeHorizontally(Array.from({ length: 5 }), columnCount)
+    ? distributeHorizontally(
+        Array.from({ length: columnCount * 2 }),
+        columnCount
+      )
     : [];
 
   console.log("Games: ", games);
