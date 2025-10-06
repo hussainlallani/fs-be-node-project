@@ -80,8 +80,8 @@ export default function GameCard({
           <div
             className={`text-md text-gray-600 dark:text-gray-300 border-gray-200 dark:border-gray-700 ${
               cardExpanded
-                ? "bg-gray-50 dark:bg-gray-950 break-all p-3 z-50 transition-all duration-300 ease-in-out"
-                : "bg-white dark:bg-gray-900 break-all line-clamp-2 p-3 min-h-14 z-50 transition-all duration-300 ease-in-out"
+                ? "bg-gray-50 dark:bg-gray-950 break-all p-3 z-50 transition-all duration-300 ease-in-out border-gray-200 dark:border-gray-700 rounded-b-lg border-1 border-t-0"
+                : "bg-white dark:bg-gray-900 break-all line-clamp-2 p-3 min-h-14 z-50 transition-all duration-300 ease-in-out border-b-0"
             } `}
             title={game.summary || "No summary available."}
           >
