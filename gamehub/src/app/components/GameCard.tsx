@@ -1,13 +1,11 @@
-import Image from "next/image";
 import formatNumber from "../lib/format-number";
 import { GameGrid as GameType } from "../hooks/useGameGrid";
 import Heading from "./atoms/Heading";
 import CardMetaBlock from "./organisms/CardMetaBlock";
 import Hr from "./atoms/Hr";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import SummaryToggle from "./molecules/SummaryToggle";
 import SummaryBlock from "./molecules/SummaryBlock";
-import CardSlideshoow from "./organisms/CardSlideshow";
 import CardSlideshow from "./organisms/CardSlideshow";
 
 interface GameCardProps {
