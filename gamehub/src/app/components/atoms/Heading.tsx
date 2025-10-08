@@ -2,7 +2,7 @@
 import React, { JSX } from "react";
 
 interface HeadingProps {
-  level?: 1 | 2 | 3 | 4 | 5 | 6;
+  level?: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9;
   children: React.ReactNode;
   className?: string;
   align?: "left" | "center" | "right";
@@ -17,6 +17,9 @@ const levelToSize: Record<number, string> = {
   4: "text-2xl",
   5: "text-xl",
   6: "text-lg",
+  7: "text-base",
+  8: "text-sm",
+  9: "text-xs",
 };
 
 const colorMap: Record<string, string> = {
@@ -45,10 +48,10 @@ export default function Heading({
       : "text-left";
 
   return (
-    <Tag
+    <p
       className={`${sizeClass} font-${weight} ${colorClass} ${alignClass} ${className} transition-colors duration-300 ease-in-out`}
     >
       {children}
-    </Tag>
+    </p>
   );
 }

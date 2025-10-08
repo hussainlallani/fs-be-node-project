@@ -6,6 +6,7 @@ export interface GameGrid {
   id: number;
   name: string;
   artwork: string;
+  artworks: string[];
   genres: string[];
   platforms: string[];
   release_date: number;

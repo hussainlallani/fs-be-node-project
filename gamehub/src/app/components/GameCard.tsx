@@ -1,11 +1,14 @@
-// components/GameCard.tsx
 import Image from "next/image";
 import formatNumber from "../lib/format-number";
 import { GameGrid as GameType } from "../hooks/useGameGrid";
-import ViewMoreButton from "./ViewMoreButton";
 import Heading from "./atoms/Heading";
 import CardMetaBlock from "./organisms/CardMetaBlock";
 import Hr from "./atoms/Hr";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import SummaryToggle from "./molecules/SummaryToggle";
+import SummaryBlock from "./molecules/SummaryBlock";
+import CardSlideshoow from "./organisms/CardSlideshow";
+import CardSlideshow from "./organisms/CardSlideshow";
 
 interface GameCardProps {
   index: number;
@@ -20,39 +23,85 @@ export default function GameCard({
   cardExpanded,
   setCardExpanded,
 }: GameCardProps): React.JSX.Element {
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [hovered, setHovered] = useState(false);
+  const autoplayRef = useRef<NodeJS.Timeout | null>(null);
+
+  const slideCount = useMemo(() => game.artworks?.length ?? 0, [game.artworks]);
+  const hasArtworks = slideCount > 0;
+
+  const summaryLength = game.summary?.length ?? 0;
+  const isLongSummary = summaryLength > 21;
+
+  useEffect(() => {
+    if (!hovered || !hasArtworks) return;
+
+    autoplayRef.current = setInterval(() => {
+      setCurrentIndex((prev) => (prev + 1) % slideCount);
+    }, 1500);
+
+    return () => {
+      if (autoplayRef.current) clearInterval(autoplayRef.current);
+    };
+  }, [hovered, hasArtworks, slideCount]);
+
+  // const handleSlideClick = useCallback((i: number) => {
+  //   setCurrentIndex(i);
+  // }, []);
+
+  // const slideElements = useMemo(() => {
+  //   return game.artworks?.map((img) => (
+  //     <div
+  //       key={img}
+  //       className="absolute inset-0 bg-cover bg-center h-48 rounded-t-lg transition-opacity duration-700 ease-in-out"
+  //       style={{ backgroundImage: `url(${img})` }}
+  //     />
+  //   ));
+  // }, [game.artworks]);
+
+  // const slideIndicators = useMemo(() => {
+  //   return game.artworks?.map((_, i) => (
+  //     <button
+  //       key={i}
+  //       onClick={() => handleSlideClick(i)}
+  //       className={`h-1 w-8 rounded-lg cursor-pointer transition-colors ${
+  //         i === currentIndex ? "bg-gray-300" : "bg-gray-400"
+  //       }`}
+  //       aria-label={`Go to slide ${i + 1}`}
+  //     >
+  //       &nbsp;
+  //     </button>
+  //   ));
+  // }, [game.artworks, currentIndex, handleSlideClick]);
+
   return (
     <article
-      className={`relative break-inside-avoid shadow-md rounded-lg 
-    transition-all duration-300 ease-in-out cursor-pointer overflow-visible`}
+      className="relative break-inside-avoid shadow-md rounded-lg transition-all duration-300 ease-in-out cursor-pointer overflow-visible"
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => {
+        setHovered(false);
+        setCurrentIndex(0);
+      }}
     >
-      <div className="w-full h-48 z-0">
-        <Image
-          src={
-            game.artwork ??
-            "https://media.istockphoto.com/id/1409329028/vector/no-picture-available-placeholder-thumbnail-icon-illustration-design.jpg?s=612x612&w=0&k=20&c=_zOuJu755g2eEUioiOUdz_mHKJQJn-tDgIAhQzyeKUQ="
-          }
-          alt={game.name}
-          className="w-full h-48 object-cover rounded-t-lg border-1 border-b-0 border-gray-200 dark:border-gray-700 transition-all duration-300 ease-in-out"
-          width={400}
-          height={192}
-        />
-      </div>
       <header
-        onMouseEnter={() => {
-          setCardExpanded(index);
-        }}
-        onMouseLeave={() => setCardExpanded(index)}
-        className={`rounded-b-lg border-b-1 border-gray-200 dark:border-gray-700 transition-colors duration-300 ease-in-out
-    ${
-      cardExpanded
-        ? "bg-gray-50 dark:bg-gray-950"
-        : "bg-white dark:bg-gray-900 "
-    }
-    `}
+        onMouseEnter={() => setCardExpanded(index)}
+        onMouseLeave={() => setCardExpanded(null)}
+        className={`rounded-b-lg border-b-1 border-gray-200 dark:border-gray-700 transition-colors duration-300 ease-in-out ${
+          cardExpanded
+            ? "bg-gray-50 dark:bg-gray-950"
+            : "bg-white dark:bg-gray-900"
+        }`}
       >
+        <CardSlideshow
+          artworks={Array.isArray(game.artworks) ? game.artworks : []}
+          artworkFallback={game.artwork}
+          alt={game.name}
+          hovered={hovered}
+        />
+
         <Heading
           level={5}
-          className="font-semibold text-gray-900 dark:text-white p-3 border-x-1 border-gray-200 dark:border-gray-700 transition-colors duration-300 ease-in-out "
+          className="font-semibold text-gray-900 dark:text-white py-2 px-3 border-x-1 border-gray-200 dark:border-gray-700 transition-colors duration-300 ease-in-out"
         >
           {game.name}: {index}
         </Heading>
@@ -73,45 +122,20 @@ export default function GameCard({
         />
         <Hr />
 
-        {/* Summary */}
-        <div
-          className={`relative h-12 md:h-16 md:mb-2 border-x border-gray-200 dark:border-gray-700 transition-all duration-300 ease-in-out flex flex-col z-50`}
-        >
-          <div
-            className={`text-md text-gray-600 dark:text-gray-300 border-gray-200 dark:border-gray-700 ${
-              cardExpanded
-                ? "bg-gray-50 dark:bg-gray-950 break-all p-3 z-50 transition-all duration-300 ease-in-out border-gray-200 dark:border-gray-700 rounded-b-lg border-1 border-t-0"
-                : "bg-white dark:bg-gray-900 break-all line-clamp-2 p-3 min-h-14 z-50 transition-all duration-300 ease-in-out border-b-0"
-            } `}
-            title={game.summary || "No summary available."}
-          >
-            Summary: {game.summary || "No summary available."}
-            {/* View more button */}
-            <div className="block pt-1 md:hidden">
-              <ViewMoreButton
-                index={index}
-                cardExpanded={cardExpanded}
-                setCardExpanded={setCardExpanded}
-                className=""
-              />
-            </div>
-          </div>
-        </div>
-      </header>
-      <div
-        className={`block pt-4 pb-2 rounded-b-lg border-1 border-gray-200 dark:border-gray-700 md:hidden ${
-          cardExpanded
-            ? "bg-gray-50 dark:bg-gray-950"
-            : "bg-white dark:bg-gray-900"
-        }`}
-      >
-        <ViewMoreButton
+        <SummaryBlock
           index={index}
+          summary={game?.summary}
           cardExpanded={cardExpanded}
           setCardExpanded={setCardExpanded}
-          className=""
         />
-      </div>
+        {isLongSummary && (
+          <SummaryToggle
+            index={index}
+            cardExpanded={cardExpanded}
+            setCardExpanded={setCardExpanded}
+          />
+        )}
+      </header>
     </article>
   );
 }
