@@ -32,9 +32,13 @@ jobs:
           port: 2222
           script: |
             echo "🔧 Starting deploy on $(hostname)"
+            # Ensure target directory exists and is owned by admin
+            sudo mkdir -p /var/www/fs-be-node-project
+            sudo chown -R admin:admin /var/www/fs-be-node-project
+
             cd /var/www/fs-be-node-project || {
-              echo "❌ Failed to find project directory! "
-              exit 1
+            echo "❌ Failed to access project directory!"
+            exit 1
             }
 
             echo "📁 Project directory contents:"
@@ -95,6 +99,6 @@ jobs:
 
             # Save PM2 state
             pm2 save
-            pm2 startup systemd -u root --hp /root
+            sudo pm2 startup systemd -u admin --hp /home/admin
 
             echo "🎉 Deployment completed successfully!"
