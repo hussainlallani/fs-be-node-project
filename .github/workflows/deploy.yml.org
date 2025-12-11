@@ -17,9 +17,9 @@ jobs:
         uses: appleboy/scp-action@master
         with:
           host: ${{ secrets.SSH_HOST }}
-          username: root
+          username: admin
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          port: 22
+          port: 2222
           source: "."
           target: "/var/www/fs-be-node-project"
           overwrite: true
@@ -29,9 +29,9 @@ jobs:
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.SSH_HOST }}
-          username: root
+          username: admin
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          port: 22
+          port: 2222
           script: |
             echo "🔧 Starting deploy on $(hostname)"
 

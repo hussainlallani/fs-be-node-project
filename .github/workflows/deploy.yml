@@ -19,14 +19,15 @@ jobs:
           path: ./
           remote_path: /var/www/fs-be-node-project
           remote_host: ${{ secrets.SSH_HOST }}
-          remote_user: root
+          remote_user: admin
           remote_key: ${{ secrets.SSH_PRIVATE_KEY }}
+          remote_port: 2222
 
       - name: Setup & Run Node.js + Next.js Apps
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.SSH_HOST }}
-          username: root
+          username: admin
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: 2222
           script: |
