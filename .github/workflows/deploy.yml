@@ -33,7 +33,7 @@ jobs:
           script: |
             echo "🔧 Starting deploy on $(hostname)"
             cd /var/www/fs-be-node-project || {
-              echo "❌ Failed to find project directory!"
+              echo "❌ Failed to find project directory! "
               exit 1
             }
 
