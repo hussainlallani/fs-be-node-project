@@ -8,24 +8,22 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v4
 
-      - name: Copy Files via SCP
-        uses: appleboy/scp-action@master
+      - name: Deploy with Rsync
+        uses: burnett01/rsync-deployments@6.0.0
         with:
-          host: ${{ secrets.SSH_HOST }}
-          username: admin
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          port: 2222
-          source: "."
-          target: "/var/www/fs-be-node-project"
-          overwrite: true
-          strip_components: 1 # Prevents creating an extra directory level
+          switches: -avz --delete
+          path: ./
+          remote_path: /var/www/fs-be-node-project
+          remote_host: ${{ secrets.SSH_HOST }}
+          remote_user: admin
+          remote_key: ${{ secrets.SSH_PRIVATE_KEY }}
+          remote_port: 2222
 
-      - name: Setup & Run Node.js App
+      - name: Setup & Run Node.js + Next.js Apps
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.SSH_HOST }}
@@ -34,78 +32,73 @@ jobs:
           port: 2222
           script: |
             echo "🔧 Starting deploy on $(hostname)"
+            # Ensure target directory exists and is owned by admin
+            sudo mkdir -p /var/www/fs-be-node-project
+            sudo chown -R admin:admin /var/www/fs-be-node-project
 
-            # Navigate to project directory
             cd /var/www/fs-be-node-project || {
-              echo "❌ Failed to find project directory!"
-              exit 1
+            echo "❌ Failed to access project directory!"
+            exit 1
             }
 
             echo "📁 Project directory contents:"
             ls -la
 
-            # Install Node.js (if needed)
+            # Node.js Setup
             if ! command -v node &> /dev/null; then
               echo "📥 Installing Node.js..."
               curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
               sudo apt-get install -y nodejs
-            else
-              echo "✅ Node.js $(node -v) already installed"
             fi
 
-            # Install PM2 globally (if needed)
+            # PM2 Setup
             if ! command -v pm2 &> /dev/null; then
               echo "📥 Installing PM2..."
               npm install -g pm2
-            else
-              echo "✅ PM2 $(pm2 -v) already installed"
             fi
 
-            # Clean previous builds
-            echo "🧹 Cleaning previous build..."
-            npm run clean
-
-            # Install dependencies
-            echo "📦 Installing dependencies..."
+            # Backend Setup
+            echo "🧹 Cleaning backend build..."
+            npm run clean || true
+            echo "📦 Installing backend dependencies..."
             npm ci --production
-
-            if ! command -v tsc &> /dev/null; then
-              echo "📥 TypeScript compiler not found, installing..."
-              npm install -g typescript
-            else
-              echo "✅ TypeScript compiler already installed: $(tsc -v)"
-            fi
-
-            # Run build
-            echo "🏗️ Building application..."
+            echo "🏗️ Building backend..."
             npm run build
 
-            # Stop MongoDB with the correct config
-            echo "🛠️ Stopping MongoDB with custom config..."
+            # MongoDB
             pm2 delete mongo_fs_be_node_project 2>/dev/null || true
-
-            # Start MongoDB with the correct config
-            echo "🛠️ Starting MongoDB with custom config..."
             pm2 start "mongod --config /etc/mongod.conf" --name "mongo_fs_be_node_project"
 
-            # Stop existing Node.js application (fs-be-node-app) if running
-            echo "🛑 Stopping existing Node.js application..."
+            # Node.js App
             pm2 delete fs-be-node-app 2>/dev/null || true
+            pm2 start dist/index.js --name "fs-be-node-app"
 
-            # Start the Node.js application with PM2
-            echo "🚀 Starting application with PM2..."
-            pm2 start dist/index.js --name "fs-be-node-app" || {
-              echo "❌ Failed to start application"
+            # GameHub Next.js Setup
+            echo "🚀 Deploying GameHub Next.js app..."
+            cd gamehub || {
+              echo "❌ GameHub directory not found!"
               exit 1
             }
 
-            # Save PM2 process list
-            echo "💾 Saving PM2 process list..."
-            pm2 save
+            echo "📦 Installing GameHub dependencies..."
+            npm install
 
-            # Configure PM2 startup
-            echo "🔁 Setting up PM2 startup..."
-            pm2 startup systemd -u root --hp /root
+            echo "🏗️ Building GameHub..."
+            npm run build || {
+            echo "❌ GameHub build failed!"
+            exit 1
+            }
+
+            echo "📁 Checking GameHub build output:"
+            ls -la .next || echo "⚠️ .next folder not found!"
+
+            # Start Next.js app with PM2
+
+            pm2 delete gamehub-next-app 2>/dev/null || true
+            pm2 start "npm run start" --name "gamehub-next-app" --cwd /var/www/fs-be-node-project/gamehub
+
+            # Save PM2 state
             pm2 save
+            sudo pm2 startup systemd -u admin --hp /home/admin
 
             echo "🎉 Deployment completed successfully!"
