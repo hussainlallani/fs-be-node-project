@@ -37,7 +37,7 @@ jobs:
             sudo chown -R admin:admin /var/www/fs-be-node-project
 
             cd /var/www/fs-be-node-project || {
-            echo "❌ Failed to access project directory! "
+            echo "❌ Failed to access project directory!"
             exit 1
             }
 
