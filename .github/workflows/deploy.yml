@@ -28,7 +28,7 @@ jobs:
           host: ${{ secrets.SSH_HOST }}
           username: root
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          port: 22
+          port: 2222
           script: |
             echo "🔧 Starting deploy on $(hostname)"
             cd /var/www/fs-be-node-project || {
