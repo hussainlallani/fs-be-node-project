@@ -24,14 +24,32 @@ const nextConfig: NextConfig = {
   //   ];
   // },
   images: {
-    domains: [
-      "images.igdb.com",
-      "media.istockphoto.com", // ✅ added
-      "media.rawg.io",
-      "www.freetogame.com",
-      "flowbite.com",
-    ],
     remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "images.igdb.com",
+        pathname: "**",
+      },
+      {
+        protocol: "https",
+        hostname: "media.istockphoto.com",
+        pathname: "**",
+      },
+      {
+        protocol: "https",
+        hostname: "media.rawg.io",
+        pathname: "**",
+      },
+      {
+        protocol: "https",
+        hostname: "www.freetogame.com",
+        pathname: "**",
+      },
+      {
+        protocol: "https",
+        hostname: "flowbite.com",
+        pathname: "**",
+      },
       {
         protocol: "https",
         hostname: "flowbite.s3.amazonaws.com",
